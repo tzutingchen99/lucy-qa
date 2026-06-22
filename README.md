@@ -83,7 +83,7 @@ git push -u origin main
 
 ## 跟 lucy-cv 的關係
 
-- `tzutingchen99.github.io/` → 履歷站（lucy-cv repo）
+- `tzutingchen99.github.io/lucy-cv/` → 履歷站（lucy-cv repo）
 - `tzutingchen99.github.io/lucy-qa/` → QA 筆記站（本 repo）
 
 兩個 repo 獨立，但 design tokens 一致；header / footer 互相連結。

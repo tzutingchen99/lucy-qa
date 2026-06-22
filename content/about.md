@@ -15,7 +15,7 @@
 
 ## 在別的地方找我
 
-- 履歷：[tzutingchen99.github.io](https://tzutingchen99.github.io/)
+- 履歷：[tzutingchen99.github.io/lucy-cv](https://tzutingchen99.github.io/lucy-cv/)
 - Threads：[@qauluru](https://www.threads.com/@qauluru)
 - GitHub：[tzutingchen99](https://github.com/tzutingchen99)
 - LinkedIn：[ttc2024](https://www.linkedin.com/in/ttc2024)
