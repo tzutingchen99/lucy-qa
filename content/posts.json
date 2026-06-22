@@ -1,0 +1,20 @@
+{
+  "posts": [
+    {
+      "slug": "hello",
+      "title": "一個放散落東西的地方",
+      "date": "2026-06-21",
+      "tag": "meta",
+      "summary": "為什麼開這個站，以及接下來會在這裡寫什麼。",
+      "status": "published"
+    },
+    {
+      "slug": "intent-vs-implementation",
+      "title": "驗意圖，不要驗實作",
+      "date": "2026-06-22",
+      "tag": "principles",
+      "summary": "重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。",
+      "status": "published"
+    }
+  ]
+}

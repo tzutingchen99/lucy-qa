@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QA 筆記</title>
+    <meta
+      name="description"
+      content="關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script>
+      // Early theme detection to avoid flash
+      (function () {
+        var saved = localStorage.getItem("qa-theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme =
+          saved === "dark" || saved === "light"
+            ? saved
+            : prefersDark
+            ? "dark"
+            : "light";
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="grid">
+      <header class="strip" role="banner">
+        <a href="./" class="strip__item strip__brand">QA / Lucy</a>
+        <nav class="strip__nav" aria-label="Primary">
+          <a href="#/" data-nav="home">Home</a>
+          <a href="#/posts" data-nav="posts">Posts</a>
+          <a href="#/about" data-nav="about">About</a>
+        </nav>
+        <div class="theme" role="group" aria-label="Theme">
+          <button
+            type="button"
+            class="theme__btn"
+            data-theme="light"
+            aria-label="Light theme"
+          >
+            ○
+          </button>
+          <span class="theme__sep" aria-hidden="true">·</span>
+          <button
+            type="button"
+            class="theme__btn"
+            data-theme="dark"
+            aria-label="Dark theme"
+          >
+            ●
+          </button>
+        </div>
+      </header>
+
+      <main id="main" class="main" tabindex="-1">
+        <p class="loading">Loading…</p>
+      </main>
+
+      <footer class="strip strip--foot" role="contentinfo">
+        <span class="strip__item">QA / Lucy</span>
+        <a href="https://tzutingchen99.github.io/" class="strip__item"
+          >CV ↗</a
+        >
+        <a
+          href="https://www.threads.com/@qauluru"
+          target="_blank"
+          rel="noopener"
+          class="strip__item"
+          >Threads ↗</a
+        >
+        <span class="strip__item strip__item--end">2026</span>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
