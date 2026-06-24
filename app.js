@@ -20,6 +20,47 @@
     return t.content.firstChild;
   }
 
+  function slugify(text) {
+    return text.trim().replace(/\s+/g, "-").replace(/[<>&"']/g, "");
+  }
+
+  function buildToc(proseEl) {
+    var headings = Array.from(proseEl.querySelectorAll("h2, h3"));
+    if (headings.length < 2) return null;
+
+    headings.forEach(function (h) {
+      if (!h.id) h.id = slugify(h.textContent);
+    });
+
+    var nav = document.createElement("nav");
+    nav.className = "toc";
+    nav.setAttribute("aria-label", "目錄");
+
+    var label = document.createElement("p");
+    label.className = "toc__label";
+    label.textContent = "目錄";
+    nav.appendChild(label);
+
+    var ul = document.createElement("ul");
+    ul.className = "toc__list";
+    headings.forEach(function (h) {
+      var li = document.createElement("li");
+      li.className =
+        "toc__item" + (h.tagName === "H3" ? " toc__item--h3" : "");
+      var a = document.createElement("a");
+      a.href = "#" + h.id;
+      a.textContent = h.textContent;
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        h.scrollIntoView({ behavior: "smooth" });
+      });
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    nav.appendChild(ul);
+    return nav;
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return {
@@ -99,7 +140,6 @@
     markNav("home");
     setTitle("");
     var data = await loadPostsIndex();
-    var recent = data.posts.slice(0, 5);
     var node = el('<div class="home"></div>');
 
     node.appendChild(
@@ -115,14 +155,14 @@
     var sec = el(
       '<section class="section">' +
         '<div class="section__head">' +
-        '<h2 class="section__title">Recent posts</h2>' +
-        '<a class="section__more" href="#/posts">All posts →</a>' +
+        '<h2 class="section__title">All posts</h2>' +
+        '<span class="section__count">' + data.posts.length + "</span>" +
         "</div>" +
         '<div class="post-list"></div>' +
         "</section>"
     );
     var list = sec.querySelector(".post-list");
-    recent.forEach(function (p) {
+    data.posts.forEach(function (p) {
       list.appendChild(postCard(p));
     });
     node.appendChild(sec);
@@ -206,7 +246,10 @@
         '<div class="prose"></div>' +
         "</article>"
     );
-    node.querySelector(".prose").innerHTML = html;
+    var proseEl = node.querySelector(".prose");
+    proseEl.innerHTML = html;
+    var toc = buildToc(proseEl);
+    if (toc) proseEl.parentNode.insertBefore(toc, proseEl);
     render(node);
   }
 
