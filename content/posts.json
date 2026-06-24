@@ -15,6 +15,14 @@
       "tag": "principles",
       "summary": "重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。",
       "status": "published"
+    },
+    {
+      "slug": "bug-language",
+      "title": "Bug 的語言",
+      "date": "2026-06-24",
+      "tag": "qa-basics",
+      "summary": "Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。",
+      "status": "published"
     }
   ]
 }
