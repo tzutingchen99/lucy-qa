@@ -3,6 +3,7 @@
   var $main = document.getElementById("main");
   var postsIndex = null;
   var firstRoute = true;
+  var basePath = location.pathname;
 
   /* ─── Marked config ───────────────────────────────────── */
   if (window.marked) {
@@ -202,7 +203,8 @@
       '<article class="post-card">' +
         '<div class="post-card__meta">' +
         escapeHtml(fmtDate(p.date)) +
-        '<span class="post-card__views"><span class="goatcounter-count" data-path="/#/posts/' +
+        '<span class="post-card__views"><span class="goatcounter-count" data-path="' +
+        escapeHtml(basePath) + '#/posts/' +
         escapeHtml(p.slug) +
         '"></span></span>' +
         "</div>" +
@@ -246,7 +248,8 @@
         '<p class="post__meta">' +
         escapeHtml(fmtDate(meta.date)) +
         (meta.tag ? "  ·  " + escapeHtml(meta.tag) : "") +
-        '  ·  <span class="goatcounter-count" data-path="/#/posts/' +
+        '  ·  <span class="goatcounter-count" data-path="' +
+        escapeHtml(basePath) + '#/posts/' +
         escapeHtml(slug) +
         '"></span> views' +
         "</p>" +
