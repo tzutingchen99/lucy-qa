@@ -346,6 +346,13 @@ img {
   white-space: nowrap;
 }
 
+.post-card__views {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--ink-4);
+  margin-top: 0.2rem;
+}
+
 .post-card__body {
   min-width: 0;
 }

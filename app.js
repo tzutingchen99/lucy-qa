@@ -1,7 +1,8 @@
 /* ─── SPA router + markdown loader ──────────────────────── */
 (function () {
   var $main = document.getElementById("main");
-  var postsIndex = null; // cached posts.json
+  var postsIndex = null;
+  var firstRoute = true;
 
   /* ─── Marked config ───────────────────────────────────── */
   if (window.marked) {
@@ -98,6 +99,9 @@
     $main.appendChild(node);
     $main.focus({ preventScroll: true });
     window.scrollTo({ top: 0 });
+    if (window.goatcounter && window.goatcounter.bind_count) {
+      window.goatcounter.bind_count();
+    }
   }
 
   function showError(msg) {
@@ -198,6 +202,9 @@
       '<article class="post-card">' +
         '<div class="post-card__meta">' +
         escapeHtml(fmtDate(p.date)) +
+        '<span class="post-card__views"><span class="goatcounter-count" data-path="/#/posts/' +
+        escapeHtml(p.slug) +
+        '"></span></span>' +
         "</div>" +
         '<div class="post-card__body">' +
         '<h3 class="post-card__title">' +
@@ -239,6 +246,9 @@
         '<p class="post__meta">' +
         escapeHtml(fmtDate(meta.date)) +
         (meta.tag ? "  ·  " + escapeHtml(meta.tag) : "") +
+        '  ·  <span class="goatcounter-count" data-path="/#/posts/' +
+        escapeHtml(slug) +
+        '"></span> views' +
         "</p>" +
         '<h1 class="post__title">' +
         escapeHtml(meta.title) +
@@ -289,6 +299,10 @@
       console.error(err);
       showError(err.message || "Something went wrong");
     }
+    if (!firstRoute && window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: location.pathname + location.hash });
+    }
+    firstRoute = false;
   }
 
   window.addEventListener("hashchange", route);
