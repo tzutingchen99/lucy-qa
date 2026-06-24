@@ -95,14 +95,27 @@
     });
   }
 
+  function fetchViewCounts() {
+    var spans = Array.from(document.querySelectorAll(".goatcounter-count[data-path]"));
+    if (!spans.length) return;
+    var script = document.querySelector("script[data-goatcounter]");
+    if (!script) return;
+    var base = script.getAttribute("data-goatcounter").replace(/\/count$/, "");
+    spans.forEach(function (span) {
+      var path = span.getAttribute("data-path");
+      fetch(base + "/counter/" + encodeURIComponent(path) + ".json")
+        .then(function (r) { return r.json(); })
+        .then(function (d) { if (d.count) span.textContent = d.count; })
+        .catch(function () {});
+    });
+  }
+
   function render(node) {
     $main.innerHTML = "";
     $main.appendChild(node);
     $main.focus({ preventScroll: true });
     window.scrollTo({ top: 0 });
-    if (window.goatcounter && window.goatcounter.bind_count) {
-      window.goatcounter.bind_count();
-    }
+    fetchViewCounts();
   }
 
   function showError(msg) {
