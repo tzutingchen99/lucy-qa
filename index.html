@@ -8,6 +8,15 @@
       name="description"
       content="關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。"
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="QA 筆記" />
+    <meta property="og:title" content="QA 筆記" />
+    <meta property="og:description" content="關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。" />
+    <meta property="og:url" content="https://tzutingchen99.github.io/lucy-qa/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="QA 筆記" />
+    <meta name="twitter:description" content="關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。" />
+    <link rel="alternate" type="application/rss+xml" title="QA 筆記 RSS" href="feed.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -34,6 +43,7 @@
     </script>
   </head>
   <body>
+    <div id="progress-bar" aria-hidden="true"></div>
     <div class="grid">
       <header class="strip" role="banner">
         <a href="./" class="strip__item strip__brand">QA / Lucy</a>
@@ -79,12 +89,14 @@
           class="strip__item"
           >Threads ↗</a
         >
+        <a href="feed.xml" class="strip__item">RSS ↗</a>
         <span id="today-views" class="strip__item" aria-live="polite"></span>
         <span id="month-views" class="strip__item" aria-live="polite"></span>
         <span class="strip__item strip__item--end">2026</span>
       </footer>
     </div>
 
+    <button id="back-to-top" aria-label="回到頂部">↑</button>
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
     <script src="theme.js"></script>
     <script src="app.js"></script>

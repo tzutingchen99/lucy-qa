@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>QA 筆記</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/</link>
+    <description>關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。</description>
+    <language>zh-Hant</language>
+    <lastBuildDate>Sat, 27 Jun 2026 16:00:00 GMT</lastBuildDate>
+    <atom:link href="https://tzutingchen99.github.io/lucy-qa/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>測試文件與流程</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</link>
+    <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</guid>
+    <pubDate>Sat, 27 Jun 2026 16:00:00 GMT</pubDate>
+    <description>Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。</description>
+  </item>
+  <item>
+    <title>Bug 的語言</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/#/posts/bug-language</link>
+    <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-language</guid>
+    <pubDate>Tue, 23 Jun 2026 16:00:00 GMT</pubDate>
+    <description>Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。</description>
+  </item>
+  <item>
+    <title>驗意圖，不要驗實作</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/#/posts/intent-vs-implementation</link>
+    <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/intent-vs-implementation</guid>
+    <pubDate>Sun, 21 Jun 2026 16:00:00 GMT</pubDate>
+    <description>重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。</description>
+  </item>
+  <item>
+    <title>一個放散落東西的地方</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/#/posts/hello</link>
+    <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/hello</guid>
+    <pubDate>Sat, 20 Jun 2026 16:00:00 GMT</pubDate>
+    <description>為什麼開這個站，以及接下來會在這裡寫什麼。</description>
+  </item>
+  </channel>
+</rss>

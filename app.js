@@ -84,8 +84,23 @@
     return d.getFullYear() + "." + mm + "." + dd;
   }
 
-  function setTitle(title) {
-    document.title = title ? title + " — QA 筆記" : "QA 筆記";
+  function updateMeta(title, description) {
+    var def = "關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。";
+    var desc = description || def;
+    document.querySelectorAll('meta[property="og:title"], meta[name="twitter:title"]').forEach(function (m) {
+      m.setAttribute("content", title);
+    });
+    document.querySelectorAll('meta[property="og:description"], meta[name="twitter:description"]').forEach(function (m) {
+      m.setAttribute("content", desc);
+    });
+    var urlMeta = document.querySelector('meta[property="og:url"]');
+    if (urlMeta) urlMeta.setAttribute("content", location.href);
+  }
+
+  function setTitle(title, description) {
+    var fullTitle = title ? title + " — QA 筆記" : "QA 筆記";
+    document.title = fullTitle;
+    updateMeta(fullTitle, description);
   }
 
   function markNav(name) {
@@ -93,6 +108,84 @@
       if (a.dataset.nav === name) a.setAttribute("aria-current", "page");
       else a.removeAttribute("aria-current");
     });
+  }
+
+  function readingTime(text) {
+    var clean = text.replace(/[#*`_~\[\]()>|]/g, " ").replace(/\s+/g, " ");
+    var zh = (clean.match(/[一-鿿㐀-䶿]/g) || []).length;
+    var en = (clean.match(/[a-zA-Z]{2,}/g) || []).length;
+    return Math.max(1, Math.ceil(zh / 300 + en / 200));
+  }
+
+  function addCopyButtons(proseEl) {
+    proseEl.querySelectorAll("pre").forEach(function (pre) {
+      var btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.textContent = "copy";
+      btn.setAttribute("aria-label", "複製程式碼");
+      btn.addEventListener("click", function () {
+        var code = pre.querySelector("code");
+        var text = code ? code.textContent : pre.textContent;
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text).then(function () {
+            btn.textContent = "done ✓";
+            btn.classList.add("copy-btn--done");
+            setTimeout(function () {
+              btn.textContent = "copy";
+              btn.classList.remove("copy-btn--done");
+            }, 2000);
+          }).catch(function () {});
+        }
+      });
+      pre.appendChild(btn);
+    });
+  }
+
+  function addHeadingAnchors(proseEl) {
+    proseEl.querySelectorAll("h2, h3").forEach(function (h) {
+      if (!h.id) h.id = slugify(h.textContent);
+      var a = document.createElement("a");
+      a.className = "heading-anchor";
+      a.href = "#" + h.id;
+      a.setAttribute("aria-hidden", "true");
+      a.textContent = "#";
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        h.scrollIntoView({ behavior: "smooth" });
+      });
+      h.appendChild(a);
+    });
+  }
+
+  function addRelatedPosts(articleNode, meta, allPosts) {
+    if (!meta.tag) return;
+    var related = allPosts.filter(function (p) {
+      return p.slug !== meta.slug && p.tag === meta.tag;
+    });
+    if (!related.length) return;
+    var section = document.createElement("div");
+    section.className = "related";
+    var label = document.createElement("p");
+    label.className = "related__label";
+    label.textContent = "同系列";
+    section.appendChild(label);
+    var ul = document.createElement("ul");
+    ul.className = "related__list";
+    related.slice(0, 3).forEach(function (p) {
+      var li = document.createElement("li");
+      li.className = "related__item";
+      var a = document.createElement("a");
+      a.href = "#/posts/" + p.slug;
+      a.textContent = p.title;
+      var dateSpan = document.createElement("span");
+      dateSpan.className = "related__date";
+      dateSpan.textContent = fmtDate(p.date);
+      li.appendChild(a);
+      li.appendChild(dateSpan);
+      ul.appendChild(li);
+    });
+    section.appendChild(ul);
+    articleNode.appendChild(section);
   }
 
   function fetchViewCounts() {
@@ -259,8 +352,9 @@
       showError("Post not found (or still in draft)");
       return;
     }
-    setTitle(meta.title);
+    setTitle(meta.title, meta.summary);
     var md = await loadMarkdown("content/posts/" + slug + ".md");
+    var mins = readingTime(md);
     var html = marked.parse(md);
     var node = el(
       '<article class="post">' +
@@ -268,6 +362,7 @@
         '<p class="post__meta">' +
         escapeHtml(fmtDate(meta.date)) +
         (meta.tag ? "  ·  " + escapeHtml(meta.tag) : "") +
+        "  ·  " + mins + " min read" +
         '  ·  <span class="goatcounter-count" data-path="' +
         escapeHtml(basePath) + '#/posts/' +
         escapeHtml(slug) +
@@ -283,6 +378,9 @@
     proseEl.innerHTML = html;
     var toc = buildToc(proseEl);
     if (toc) proseEl.parentNode.insertBefore(toc, proseEl);
+    addHeadingAnchors(proseEl);
+    addCopyButtons(proseEl);
+    addRelatedPosts(node, meta, data.posts);
     render(node);
   }
 
@@ -381,6 +479,38 @@
       })
       .catch(function () {});
   }
+
+  /* ─── Progress bar + Back to top ─────────────────────── */
+  var progressBar = document.getElementById("progress-bar");
+  var backToTopBtn = document.getElementById("back-to-top");
+
+  function updateScroll() {
+    var scrollTop = window.scrollY;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+
+    if (progressBar) {
+      if ($main.querySelector(".post")) {
+        progressBar.style.width = pct + "%";
+        progressBar.classList.toggle("active", scrollTop > 0);
+      } else {
+        progressBar.style.width = "0%";
+        progressBar.classList.remove("active");
+      }
+    }
+
+    if (backToTopBtn) {
+      backToTopBtn.classList.toggle("visible", scrollTop > 400);
+    }
+  }
+
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  window.addEventListener("scroll", updateScroll, { passive: true });
 
   window.addEventListener("hashchange", route);
   document.addEventListener("DOMContentLoaded", function () {
