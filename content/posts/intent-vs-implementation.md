@@ -73,7 +73,7 @@ def test_calculate_fee():
 | API 自動化 | assert response body / status / DB 終態，不要 mock 中間步驟然後 assert mock 被呼叫 |
 | Spec review | 看到 spec 寫「X 元件會呼叫 Y service 三次」就提出來 — 這是實作細節，不該入 spec |
 
-## 一句話收尾
+## 一個結論
 
 > **重構之後測試應該全綠。如果不是綠的，要嘛功能真的壞了，要嘛你的測試在驗錯的東西。**
 
