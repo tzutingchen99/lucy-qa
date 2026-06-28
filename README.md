@@ -5,7 +5,7 @@ QA 主題的個人網站。純 HTML / CSS / JS，無框架、零 build。
 ## 本地預覽
 
 ```bash
-cd ~/Desktop/lucy-qa
+cd ~/lucy-qa
 python3 -m http.server 8000
 ```
 
@@ -24,9 +24,12 @@ lucy-qa/
 ├── content/
 │   ├── posts.json          # 文章 metadata
 │   ├── about.md            # About 頁內容
-│   └── posts/
-│       ├── hello.md
-│       └── intent-vs-implementation.md
+│   ├── posts/              # 已發布文章
+│   │   ├── hello.md
+│   │   ├── intent-vs-implementation.md
+│   │   ├── bug-language.md
+│   │   └── test-docs.md
+│   └── drafts/             # 草稿（不 deploy、不公開）
 └── README.md
 ```
 
@@ -64,7 +67,7 @@ lucy-qa/
 ## 部署到 GitHub Pages
 
 ```bash
-cd ~/Desktop/lucy-qa
+cd ~/lucy-qa
 git init
 git add .
 git commit -m "init"
