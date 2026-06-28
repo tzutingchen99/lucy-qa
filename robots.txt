@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tzutingchen99.github.io/lucy-qa/sitemap.xml

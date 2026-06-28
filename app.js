@@ -188,6 +188,125 @@
     articleNode.appendChild(section);
   }
 
+  function buildSeriesNav(meta, allPosts) {
+    if (!meta.tag) return null;
+    var series = allPosts
+      .filter(function (p) { return p.tag === meta.tag; })
+      .sort(function (a, b) { return a.date.localeCompare(b.date); });
+    if (series.length < 2) return null;
+    var idx = series.findIndex(function (p) { return p.slug === meta.slug; });
+    var nav = document.createElement("nav");
+    nav.className = "series";
+    nav.setAttribute("aria-label", meta.tag + " 系列");
+    var label = document.createElement("p");
+    label.className = "series__label";
+    label.textContent = meta.tag + " 系列  " + (idx + 1) + " / " + series.length;
+    nav.appendChild(label);
+    var ul = document.createElement("ul");
+    ul.className = "series__list";
+    series.forEach(function (p, i) {
+      var li = document.createElement("li");
+      li.className = "series__item" + (p.slug === meta.slug ? " series__item--current" : "");
+      var num = document.createElement("span");
+      num.className = "series__num";
+      num.textContent = (i + 1) + ".";
+      li.appendChild(num);
+      if (p.slug === meta.slug) {
+        var span = document.createElement("span");
+        span.textContent = p.title;
+        li.appendChild(span);
+      } else {
+        var a = document.createElement("a");
+        a.href = "#/posts/" + p.slug;
+        a.textContent = p.title;
+        li.appendChild(a);
+      }
+      ul.appendChild(li);
+    });
+    nav.appendChild(ul);
+    return nav;
+  }
+
+  function addPrevNext(articleNode, meta, allPosts) {
+    var idx = allPosts.findIndex(function (p) { return p.slug === meta.slug; });
+    var newer = allPosts[idx - 1];
+    var older = allPosts[idx + 1];
+    if (!newer && !older) return;
+    var nav = document.createElement("nav");
+    nav.className = "post-nav";
+    nav.setAttribute("aria-label", "文章導航");
+    var prevEl = document.createElement("div");
+    prevEl.className = "post-nav__item post-nav__item--prev";
+    if (older) {
+      var prevDir = document.createElement("span");
+      prevDir.className = "post-nav__dir";
+      prevDir.textContent = "← 上一篇";
+      var prevLink = document.createElement("a");
+      prevLink.href = "#/posts/" + older.slug;
+      prevLink.className = "post-nav__title";
+      prevLink.textContent = older.title;
+      prevEl.appendChild(prevDir);
+      prevEl.appendChild(prevLink);
+    }
+    nav.appendChild(prevEl);
+    var nextEl = document.createElement("div");
+    nextEl.className = "post-nav__item post-nav__item--next";
+    if (newer) {
+      var nextDir = document.createElement("span");
+      nextDir.className = "post-nav__dir";
+      nextDir.textContent = "下一篇 →";
+      var nextLink = document.createElement("a");
+      nextLink.href = "#/posts/" + newer.slug;
+      nextLink.className = "post-nav__title";
+      nextLink.textContent = newer.title;
+      nextEl.appendChild(nextDir);
+      nextEl.appendChild(nextLink);
+    }
+    nav.appendChild(nextEl);
+    articleNode.appendChild(nav);
+  }
+
+  async function viewSearch() {
+    markNav("search");
+    setTitle("搜尋");
+    var data = await loadPostsIndex();
+    var node = el('<div class="search-page"></div>');
+    var input = document.createElement("input");
+    input.type = "search";
+    input.className = "search-input";
+    input.placeholder = "搜尋文章 — 標題、摘要、標籤…";
+    input.setAttribute("aria-label", "搜尋文章");
+    node.appendChild(input);
+    var results = document.createElement("div");
+    results.className = "search-results";
+    node.appendChild(results);
+    function doSearch(q) {
+      var q2 = q.trim().toLowerCase();
+      results.innerHTML = "";
+      var matched = q2
+        ? data.posts.filter(function (p) {
+            return (
+              (p.title && p.title.toLowerCase().includes(q2)) ||
+              (p.summary && p.summary.toLowerCase().includes(q2)) ||
+              (p.tag && p.tag.toLowerCase().includes(q2))
+            );
+          })
+        : data.posts;
+      if (!matched.length) {
+        var empty = document.createElement("p");
+        empty.className = "search-empty";
+        empty.textContent = "沒有符合的文章";
+        results.appendChild(empty);
+        return;
+      }
+      matched.forEach(function (p) { results.appendChild(postCard(p)); });
+    }
+    input.addEventListener("input", function () { doSearch(input.value); });
+    render(node);
+    doSearch("");
+    setTimeout(function () { input.focus(); }, 50);
+  }
+
   function fetchViewCounts() {
     var spans = Array.from(document.querySelectorAll(".goatcounter-count[data-path]"));
     if (!spans.length) return;
@@ -376,11 +495,14 @@
     );
     var proseEl = node.querySelector(".prose");
     proseEl.innerHTML = html;
+    var seriesNav = buildSeriesNav(meta, data.posts);
+    if (seriesNav) node.insertBefore(seriesNav, proseEl);
     var toc = buildToc(proseEl);
-    if (toc) proseEl.parentNode.insertBefore(toc, proseEl);
+    if (toc) node.insertBefore(toc, proseEl);
     addHeadingAnchors(proseEl);
     addCopyButtons(proseEl);
-    addRelatedPosts(node, meta, data.posts);
+    if (window.Prism) Prism.highlightAllUnder(proseEl);
+    addPrevNext(node, meta, data.posts);
     render(node);
   }
 
@@ -445,6 +567,8 @@
         await viewTag(tag);
       } else if (hash === "/about") {
         await viewAbout();
+      } else if (hash === "/search") {
+        await viewSearch();
       } else {
         showError("Page not found");
       }
@@ -514,6 +638,10 @@
 
   window.addEventListener("hashchange", route);
   document.addEventListener("DOMContentLoaded", function () {
+    if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
+      Prism.plugins.autoloader.languages_path =
+        "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";
+    }
     route();
     fetchViewStats();
   });

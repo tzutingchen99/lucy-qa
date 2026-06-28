@@ -50,7 +50,8 @@ lucy-qa/
    ```
 
 3. 執行 `node generate-feed.js` 更新 RSS feed
-4. commit + push。完。
+4. 執行 `node generate-sitemap.js` 更新 Sitemap
+5. commit + push。完。
 
 文章順序按 `date` 自動排序，最新在前。
 
