@@ -4,7 +4,7 @@
       "slug": "hello",
       "title": "一個放散落東西的地方",
       "date": "2026-06-21",
-      "tag": "meta",
+      "tag": "關於",
       "summary": "為什麼開這個站，以及接下來會在這裡寫什麼。",
       "status": "published"
     },
@@ -12,7 +12,7 @@
       "slug": "intent-vs-implementation",
       "title": "驗意圖，不要驗實作",
       "date": "2026-06-22",
-      "tag": "principles",
+      "tag": "原則",
       "summary": "重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。",
       "status": "published"
     },
@@ -20,7 +20,7 @@
       "slug": "bug-language",
       "title": "Bug 的語言",
       "date": "2026-06-24",
-      "tag": "qa-basics",
+      "tag": "術語",
       "summary": "Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。",
       "status": "published"
     },
@@ -28,7 +28,7 @@
       "slug": "test-docs",
       "title": "測試文件與流程",
       "date": "2026-06-28",
-      "tag": "qa-basics",
+      "tag": "術語",
       "summary": "Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。",
       "status": "published"
     }
