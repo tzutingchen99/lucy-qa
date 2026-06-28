@@ -23,6 +23,14 @@
       "tag": "qa-basics",
       "summary": "Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。",
       "status": "published"
+    },
+    {
+      "slug": "test-docs",
+      "title": "測試文件與流程",
+      "date": "2026-06-28",
+      "tag": "qa-basics",
+      "summary": "Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。",
+      "status": "published"
     }
   ]
 }
