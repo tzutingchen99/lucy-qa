@@ -360,6 +360,20 @@
     firstRoute = false;
   }
 
+  function fetchTodayTotal() {
+    var today = new Date().toISOString().slice(0, 10);
+    fetch("https://tzu.goatcounter.com/counter/TOTAL.json?start=" + today)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var span = document.getElementById("today-views");
+        if (span && d.count) span.textContent = "today · " + d.count;
+      })
+      .catch(function () {});
+  }
+
   window.addEventListener("hashchange", route);
-  document.addEventListener("DOMContentLoaded", route);
+  document.addEventListener("DOMContentLoaded", function () {
+    route();
+    fetchTodayTotal();
+  });
 })();
