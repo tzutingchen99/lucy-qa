@@ -231,7 +231,7 @@
             "</p>"
           : "") +
         (p.tag
-          ? '<span class="post-card__tag">' + escapeHtml(p.tag) + "</span>"
+          ? '<button class="post-card__tag" data-tag="' + escapeHtml(p.tag) + '">' + escapeHtml(p.tag) + "</button>"
           : "") +
         "</div>" +
         "</article>"
@@ -239,6 +239,13 @@
     card.addEventListener("click", function () {
       location.hash = "#/posts/" + p.slug;
     });
+    var tagBtn = card.querySelector(".post-card__tag");
+    if (tagBtn) {
+      tagBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        location.hash = "#/tags/" + tagBtn.dataset.tag;
+      });
+    }
     return card;
   }
 
@@ -279,6 +286,35 @@
     render(node);
   }
 
+  async function viewTag(tag) {
+    markNav("posts");
+    setTitle(tag);
+    var data = await loadPostsIndex();
+    var filtered = data.posts.filter(function (p) { return p.tag === tag; });
+    var node = el('<div class="posts-page"></div>');
+
+    node.appendChild(el(
+      '<nav class="breadcrumb" aria-label="Breadcrumb">' +
+      '<a href="#/" class="breadcrumb__item">Home</a>' +
+      '<span class="breadcrumb__sep" aria-hidden="true">/</span>' +
+      '<span class="breadcrumb__item breadcrumb__item--current">' + escapeHtml(tag) + '</span>' +
+      '</nav>'
+    ));
+
+    var sec = el(
+      '<section class="section">' +
+      '<div class="section__head">' +
+      '<h2 class="section__title">' + escapeHtml(tag) + '</h2>' +
+      '<span class="section__count">' + filtered.length + '</span>' +
+      '</div>' +
+      '<div class="post-list"></div>' +
+      '</section>'
+    );
+    filtered.forEach(function (p) { sec.querySelector(".post-list").appendChild(postCard(p)); });
+    node.appendChild(sec);
+    render(node);
+  }
+
   async function viewAbout() {
     markNav("about");
     setTitle("About");
@@ -306,6 +342,9 @@
       } else if (hash.startsWith("/posts/")) {
         var slug = hash.slice("/posts/".length);
         await viewPost(slug);
+      } else if (hash.startsWith("/tags/")) {
+        var tag = hash.slice("/tags/".length);
+        await viewTag(tag);
       } else if (hash === "/about") {
         await viewAbout();
       } else {

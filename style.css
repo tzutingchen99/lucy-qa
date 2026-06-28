@@ -391,6 +391,44 @@ img {
   padding: 0.1rem 0.45rem;
   border: 1px solid var(--rule-soft);
   border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.post-card__tag:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ─── Breadcrumb ────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 2rem;
+}
+
+.breadcrumb__sep {
+  color: var(--ink-4);
+  user-select: none;
+}
+
+a.breadcrumb__item {
+  transition: color 160ms ease;
+}
+
+a.breadcrumb__item:hover {
+  color: var(--ink);
+}
+
+.breadcrumb__item--current {
+  color: var(--ink);
 }
 
 /* ─── Post page ─────────────────────────────────────────── */
