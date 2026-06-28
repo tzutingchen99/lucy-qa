@@ -360,8 +360,11 @@
     firstRoute = false;
   }
 
-  function fetchTodayTotal() {
-    var today = new Date().toISOString().slice(0, 10);
+  function fetchViewStats() {
+    var now = new Date();
+    var today = now.toISOString().slice(0, 10);
+    var monthStart = today.slice(0, 8) + "01";
+
     fetch("https://tzu.goatcounter.com/counter/TOTAL.json?start=" + today)
       .then(function (r) { return r.json(); })
       .then(function (d) {
@@ -369,11 +372,19 @@
         if (span && d.count) span.textContent = "today · " + d.count;
       })
       .catch(function () {});
+
+    fetch("https://tzu.goatcounter.com/counter/TOTAL.json?start=" + monthStart)
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var span = document.getElementById("month-views");
+        if (span && d.count) span.textContent = "this month · " + d.count;
+      })
+      .catch(function () {});
   }
 
   window.addEventListener("hashchange", route);
   document.addEventListener("DOMContentLoaded", function () {
     route();
-    fetchTodayTotal();
+    fetchViewStats();
   });
 })();
