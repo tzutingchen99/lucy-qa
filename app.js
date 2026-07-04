@@ -432,7 +432,7 @@
       var path = span.getAttribute("data-path");
       fetch(base + "/counter/" + encodeURIComponent(path) + ".json")
         .then(function (r) { return r.json(); })
-        .then(function (d) { if (d.count) span.textContent = d.count; })
+        .then(function (d) { if (d.count) span.textContent = "瀏覽 " + d.count; })
         .catch(function () {});
     });
   }
@@ -601,7 +601,7 @@
         '  ·  <span class="goatcounter-count" data-path="' +
         escapeHtml(basePath) + '#/posts/' +
         escapeHtml(slug) +
-        '"></span> views' +
+        '"></span>' +
         "</p>" +
         '<h1 class="post__title">' +
         escapeHtml(meta.title) +
