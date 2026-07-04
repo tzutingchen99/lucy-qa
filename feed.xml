@@ -15,6 +15,13 @@
     <description>Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。</description>
   </item>
   <item>
+    <title>Bug Report 的最小單位是什麼</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/#/posts/bug-report-minimum-unit</link>
+    <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-report-minimum-unit</guid>
+    <pubDate>Fri, 03 Jul 2026 16:00:00 GMT</pubDate>
+    <description>收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。</description>
+  </item>
+  <item>
     <title>測試文件與流程</title>
     <link>https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</link>
     <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</guid>

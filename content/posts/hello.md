@@ -4,7 +4,23 @@
 
 很多事情我以為自己理解了，等到要寫出來才發現根本沒想清楚。所以這裡對我來說，比較像是 **自己整理思緒的地方**，順便把整理好的東西放出來。有人剛好看到、覺得有用，是 bonus。
 
-## 接下來會寫什麼
+## 已寫的
+
+**術語 / 概念**
+
+- [Bug 的語言](#/posts/bug-language) — Bug、Defect、Severity、Priority，這些詞說的不一定是同一件事。
+- [測試文件與流程](#/posts/test-docs) — Test Plan、DoD、Acceptance Criteria 是什麼、怎麼用。
+- [Flaky、Coverage、Regression：你說的跟我說的一樣嗎？](#/posts/common-terms) — 被說爛的詞，重新說清楚。
+
+**原則**
+
+- [驗意圖，不要驗實作](#/posts/intent-vs-implementation) — 重構後測試全紅但沒 bug，問題在哪。
+
+**Bug Report**
+
+- [Bug Report 的最小單位是什麼](#/posts/bug-report-minimum-unit) — 收到「這個壞掉了」之後，缺的是什麼。
+
+## 還在排隊的
 
 **自動化**
 
@@ -23,22 +39,14 @@
 - **MCP 串內部系統** — 一個 server 解掉多少手工流程的真實數字。
 - **AI 做 spec review** — 可以接到什麼程度，又會在哪裡掉鏈子。
 
-**測試品味 / 原則**
+**原則**
 
-- [驗意圖不要驗實作](#/posts/intent-vs-implementation)（已寫）
-- **覆蓋率 90% 不代表沒事** — 為什麼覆蓋率作為 KPI 是反指標。
-- **Flaky test 怎麼面對** — 不是「修好它」，是先決定「它配不配被修」。
-- **能 reproduce 就是好 bug report 的第一條** — 其他都是裝飾。
 - **測試金字塔在 2026 年還成立嗎** — 經典模型遇到 AI / serverless / 微服務的拉扯。
 
 **Spec / 流程**
 
 - **Spec review 該抓什麼、放過什麼** — 一個 QA 在 spec review 的攻防取捨。
 - **跟 PM / RD 對齊驗收條件** — 不是把驗收條件寫死，而是讓三方語言一致。
-
-**入門**
-
-- **QA 技術用語篇** — SUT、TDD、BDD、smoke、E2E、UAT⋯⋯那些術語到底在說什麼。
 
 ## 寫法
 
