@@ -45,7 +45,7 @@
       "slug": "bug-report-minimum-unit",
       "title": "Bug Report 的最小單位是什麼",
       "date": "2026-07-04",
-      "tag": "回報技巧",
+      "tag": "Bug Report",
       "summary": "收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。",
       "status": "published"
     }
