@@ -174,7 +174,6 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  margin-left: auto;
   font-family: var(--mono);
   font-size: 0.85rem;
   line-height: 1;
@@ -689,6 +688,7 @@ a.breadcrumb__item:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.1rem;
+  margin-left: auto;
   font-family: var(--mono);
   font-size: 0.7rem;
 }
