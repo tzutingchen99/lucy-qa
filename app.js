@@ -695,10 +695,10 @@
       } else if (hash === "/posts") {
         await viewPosts();
       } else if (hash.startsWith("/posts/")) {
-        var slug = hash.slice("/posts/".length);
+        var slug = decodeURIComponent(hash.slice("/posts/".length));
         await viewPost(slug);
       } else if (hash.startsWith("/tags/")) {
-        var tag = hash.slice("/tags/".length);
+        var tag = decodeURIComponent(hash.slice("/tags/".length));
         await viewTag(tag);
       } else if (hash === "/about") {
         await viewAbout();
