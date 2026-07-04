@@ -35,7 +35,7 @@
     },
     {
       "slug": "common-terms",
-      "title": "現場高頻術語",
+      "title": "Flaky、Coverage、Regression：你說的跟我說的一樣嗎？",
       "date": "2026-07-04",
       "tag": "術語",
       "summary": "Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。",

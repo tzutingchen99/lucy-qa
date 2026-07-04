@@ -5,8 +5,15 @@
     <link>https://tzutingchen99.github.io/lucy-qa/</link>
     <description>關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。</description>
     <language>zh-Hant</language>
-    <lastBuildDate>Sat, 27 Jun 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 03 Jul 2026 16:00:00 GMT</lastBuildDate>
     <atom:link href="https://tzutingchen99.github.io/lucy-qa/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/#/posts/common-terms</link>
+    <guid isPermaLink="true">https://tzutingchen99.github.io/lucy-qa/#/posts/common-terms</guid>
+    <pubDate>Fri, 03 Jul 2026 16:00:00 GMT</pubDate>
+    <description>Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。</description>
+  </item>
   <item>
     <title>測試文件與流程</title>
     <link>https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</link>
