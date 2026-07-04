@@ -718,23 +718,21 @@
   }
 
   function fetchViewStats() {
-    var now = new Date();
-    var today = now.toISOString().slice(0, 10);
-    var monthStart = today.slice(0, 8) + "01";
+    var today = new Date().toISOString().slice(0, 10);
 
     fetch("https://tzu.goatcounter.com/counter/TOTAL.json?start=" + today)
       .then(function (r) { return r.json(); })
       .then(function (d) {
         var span = document.getElementById("today-views");
-        if (span && d.count) span.textContent = "today · " + d.count;
+        if (span && d.count) span.textContent = "今日瀏覽 " + d.count;
       })
       .catch(function () {});
 
-    fetch("https://tzu.goatcounter.com/counter/TOTAL.json?start=" + monthStart)
+    fetch("https://tzu.goatcounter.com/counter/TOTAL.json")
       .then(function (r) { return r.json(); })
       .then(function (d) {
-        var span = document.getElementById("month-views");
-        if (span && d.count) span.textContent = "this month · " + d.count;
+        var span = document.getElementById("total-views");
+        if (span && d.count) span.textContent = "累計瀏覽 " + d.count;
       })
       .catch(function () {});
   }
