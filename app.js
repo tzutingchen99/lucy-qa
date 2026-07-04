@@ -261,7 +261,7 @@
     name.textContent = "Lucy Chen";
     var desc = document.createElement("p");
     desc.className = "bio__desc";
-    desc.textContent = "做 QA 五年。寫自動化、AI 輔助測試，以及測試品味。";
+    desc.textContent = "做 QA 五年。寫自動化、AI 輔助測試，以及 QA 的思考方式。";
     var links = document.createElement("div");
     links.className = "bio__links";
     [
