@@ -596,7 +596,7 @@
         '<p class="post__meta">' +
         escapeHtml(fmtDate(meta.date)) +
         (meta.updated ? "  ·  更新 " + escapeHtml(fmtDate(meta.updated)) : "") +
-        (meta.tag ? "  ·  " + escapeHtml(meta.tag) : "") +
+        (meta.tag ? '  ·  <a href="#/tags/' + escapeHtml(meta.tag) + '" class="post__tag-link">' + escapeHtml(meta.tag) + '</a>' : "") +
         "  ·  " + mins + " min read" +
         '  ·  <span class="goatcounter-count" data-path="' +
         escapeHtml(basePath) + '#/posts/' +
