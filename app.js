@@ -196,7 +196,7 @@
       if (!match) return;
       var type = match[1].toUpperCase().replace(";", "");
       var labels = { TLDR: "TL;DR", NOTE: "Note", WARNING: "注意", IMPORTANT: "重點", TIP: "Tip" };
-      firstP.innerHTML = firstP.innerHTML.replace(/^\[![^\]]+\]\s*/i, "");
+      firstP.innerHTML = firstP.innerHTML.replace(/^\s*\[![^\]]+\]\s*/i, "");
       var div = document.createElement("div");
       div.className = "callout callout--" + type.toLowerCase();
       var labelEl = document.createElement("p");
@@ -274,7 +274,7 @@
       a.href = s.href;
       a.textContent = s.text;
       a.target = "_blank";
-      a.rel = "noopener";
+      a.rel = "noopener noreferrer";
       links.appendChild(a);
     });
     content.appendChild(name);
@@ -293,7 +293,7 @@
     threadsLink.href = "https://www.threads.com/@qauluru";
     threadsLink.textContent = "Threads @qauluru";
     threadsLink.target = "_blank";
-    threadsLink.rel = "noopener";
+    threadsLink.rel = "noopener noreferrer";
     cta.appendChild(threadsLink);
     cta.appendChild(document.createTextNode("  ·  "));
     var rssLink = document.createElement("a");
@@ -307,7 +307,7 @@
     if (!meta.tag) return null;
     var series = allPosts
       .filter(function (p) { return p.tag === meta.tag; })
-      .sort(function (a, b) { return a.date.localeCompare(b.date); });
+      .sort(function (a, b) { return (a.date || "").localeCompare(b.date || ""); });
     if (series.length < 2) return null;
     var idx = series.findIndex(function (p) { return p.slug === meta.slug; });
     var nav = document.createElement("nav");
@@ -350,9 +350,9 @@
     var nav = document.createElement("nav");
     nav.className = "post-nav";
     nav.setAttribute("aria-label", "文章導航");
-    var prevEl = document.createElement("div");
-    prevEl.className = "post-nav__item post-nav__item--prev";
     if (older) {
+      var prevEl = document.createElement("div");
+      prevEl.className = "post-nav__item post-nav__item--prev";
       var prevDir = document.createElement("span");
       prevDir.className = "post-nav__dir";
       prevDir.textContent = "← 上一篇";
@@ -362,11 +362,11 @@
       prevLink.textContent = older.title;
       prevEl.appendChild(prevDir);
       prevEl.appendChild(prevLink);
+      nav.appendChild(prevEl);
     }
-    nav.appendChild(prevEl);
-    var nextEl = document.createElement("div");
-    nextEl.className = "post-nav__item post-nav__item--next";
     if (newer) {
+      var nextEl = document.createElement("div");
+      nextEl.className = "post-nav__item post-nav__item--next";
       var nextDir = document.createElement("span");
       nextDir.className = "post-nav__dir";
       nextDir.textContent = "下一篇 →";
@@ -376,8 +376,8 @@
       nextLink.textContent = newer.title;
       nextEl.appendChild(nextDir);
       nextEl.appendChild(nextLink);
+      nav.appendChild(nextEl);
     }
-    nav.appendChild(nextEl);
     articleNode.appendChild(nav);
   }
 
@@ -740,7 +740,8 @@
   }
 
   /* ─── Font size control ──────────────────────────────── */
-  var proseSize = parseFloat(localStorage.getItem("qa-font-size")) || 1.02;
+  var storedSize = parseFloat(localStorage.getItem("qa-font-size"));
+  var proseSize = (storedSize && storedSize >= 0.9 && storedSize <= 1.2) ? storedSize : 1.02;
   document.documentElement.style.setProperty("--prose-size", proseSize + "rem");
   document.querySelectorAll(".font-ctrl__btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -770,7 +771,7 @@
         location.hash = "#/search";
         break;
       case "Escape":
-        if (location.hash === "#/search") history.back();
+        if (location.hash === "#/search") location.hash = "#/";
         break;
       case "j":
         navigatePost(1);

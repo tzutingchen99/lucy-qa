@@ -9,16 +9,10 @@ const posts = JSON.parse(fs.readFileSync("content/posts.json", "utf8")).posts
   .filter((p) => p.status === "published")
   .sort((a, b) => b.date.localeCompare(a.date));
 
+// Hash-based SPA: crawlers strip everything after # so all routes resolve
+// to the same URL. Only list the canonical root.
 const urls = [
-  { loc: SITE_URL + "/", priority: "1.0", changefreq: "weekly" },
-  { loc: SITE_URL + "/#/posts", priority: "0.8", changefreq: "weekly" },
-  { loc: SITE_URL + "/#/about", priority: "0.5", changefreq: "monthly" },
-  ...posts.map((p) => ({
-    loc: SITE_URL + "/#/posts/" + p.slug,
-    lastmod: p.date,
-    priority: "0.7",
-    changefreq: "monthly",
-  })),
+  { loc: SITE_URL + "/", lastmod: posts[0] && posts[0].date, priority: "1.0", changefreq: "weekly" },
 ];
 
 const xml =
@@ -38,7 +32,7 @@ const xml =
         .join("\n")
     )
     .join("\n") +
-  `\n</urlset>`;
+  `\n</urlset>\n`;
 
 fs.writeFileSync("sitemap.xml", xml, "utf8");
-console.log(`Generated sitemap.xml — ${posts.length} posts + 3 static pages.`);
+console.log(`Generated sitemap.xml — root URL only (hash-based SPA).`);
