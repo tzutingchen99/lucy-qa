@@ -188,6 +188,65 @@
     articleNode.appendChild(section);
   }
 
+  function processCallouts(proseEl) {
+    proseEl.querySelectorAll("blockquote").forEach(function (bq) {
+      var firstP = bq.querySelector("p");
+      if (!firstP) return;
+      var match = firstP.textContent.trimStart().match(/^\[!(TLDR|TL;DR|NOTE|WARNING|IMPORTANT|TIP)\]/i);
+      if (!match) return;
+      var type = match[1].toUpperCase().replace(";", "");
+      var labels = { TLDR: "TL;DR", NOTE: "Note", WARNING: "注意", IMPORTANT: "重點", TIP: "Tip" };
+      firstP.innerHTML = firstP.innerHTML.replace(/^\[![^\]]+\]\s*/i, "");
+      var div = document.createElement("div");
+      div.className = "callout callout--" + type.toLowerCase();
+      var labelEl = document.createElement("p");
+      labelEl.className = "callout__label";
+      labelEl.textContent = labels[type] || type;
+      div.appendChild(labelEl);
+      while (bq.firstChild) div.appendChild(bq.firstChild);
+      bq.parentNode.replaceChild(div, bq);
+    });
+  }
+
+  function addLikeButton(articleNode, slug) {
+    var KEY = "qa-likes";
+    var likes = JSON.parse(localStorage.getItem(KEY) || "[]");
+    var liked = likes.indexOf(slug) !== -1;
+    var btn = document.createElement("button");
+    btn.className = "like-btn" + (liked ? " like-btn--active" : "");
+    btn.setAttribute("aria-pressed", liked ? "true" : "false");
+    btn.setAttribute("aria-label", liked ? "已按讚" : "這篇有幫助");
+    var icon = document.createElement("span");
+    icon.className = "like-btn__icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = liked ? "♥" : "♡";
+    var text = document.createElement("span");
+    text.textContent = liked ? "已按讚" : "這篇有幫助";
+    btn.appendChild(icon);
+    btn.appendChild(text);
+    btn.addEventListener("click", function () {
+      var current = JSON.parse(localStorage.getItem(KEY) || "[]");
+      var isLiked = current.indexOf(slug) !== -1;
+      if (isLiked) {
+        current = current.filter(function (s) { return s !== slug; });
+        btn.classList.remove("like-btn--active");
+        icon.textContent = "♡";
+        text.textContent = "這篇有幫助";
+        btn.setAttribute("aria-pressed", "false");
+        btn.setAttribute("aria-label", "這篇有幫助");
+      } else {
+        current.push(slug);
+        btn.classList.add("like-btn--active");
+        icon.textContent = "♥";
+        text.textContent = "已按讚";
+        btn.setAttribute("aria-pressed", "true");
+        btn.setAttribute("aria-label", "已按讚");
+      }
+      localStorage.setItem(KEY, JSON.stringify(current));
+    });
+    articleNode.appendChild(btn);
+  }
+
   function addAuthorBio(articleNode) {
     var bio = document.createElement("div");
     bio.className = "bio";
@@ -536,6 +595,7 @@
         '<a href="#/posts" class="post__back">← All posts</a>' +
         '<p class="post__meta">' +
         escapeHtml(fmtDate(meta.date)) +
+        (meta.updated ? "  ·  更新 " + escapeHtml(fmtDate(meta.updated)) : "") +
         (meta.tag ? "  ·  " + escapeHtml(meta.tag) : "") +
         "  ·  " + mins + " min read" +
         '  ·  <span class="goatcounter-count" data-path="' +
@@ -551,6 +611,7 @@
     );
     var proseEl = node.querySelector(".prose");
     proseEl.innerHTML = html;
+    processCallouts(proseEl);
     var metaEl = node.querySelector(".post__meta");
     if (metaEl) {
       var copyLinkBtn = document.createElement("button");
@@ -573,6 +634,7 @@
     addHeadingAnchors(proseEl);
     addCopyButtons(proseEl);
     if (window.Prism) Prism.highlightAllUnder(proseEl);
+    addLikeButton(node, slug);
     addAuthorBio(node);
     addNewsletterBanner(node);
     addPrevNext(node, meta, data.posts);
@@ -676,6 +738,48 @@
       })
       .catch(function () {});
   }
+
+  /* ─── Font size control ──────────────────────────────── */
+  var proseSize = parseFloat(localStorage.getItem("qa-font-size")) || 1.02;
+  document.documentElement.style.setProperty("--prose-size", proseSize + "rem");
+  document.querySelectorAll(".font-ctrl__btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var delta = parseInt(btn.dataset.delta, 10) * 0.06;
+      proseSize = Math.round(Math.min(1.2, Math.max(0.9, proseSize + delta)) * 100) / 100;
+      document.documentElement.style.setProperty("--prose-size", proseSize + "rem");
+      localStorage.setItem("qa-font-size", proseSize);
+    });
+  });
+
+  /* ─── Keyboard shortcuts ─────────────────────────────── */
+  function navigatePost(direction) {
+    var hash = location.hash;
+    if (!hash.startsWith("#/posts/") || !postsIndex) return;
+    var cur = hash.slice("#/posts/".length);
+    var idx = postsIndex.posts.findIndex(function (p) { return p.slug === cur; });
+    var target = direction > 0 ? postsIndex.posts[idx - 1] : postsIndex.posts[idx + 1];
+    if (target) location.hash = "#/posts/" + target.slug;
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case "/":
+        e.preventDefault();
+        location.hash = "#/search";
+        break;
+      case "Escape":
+        if (location.hash === "#/search") history.back();
+        break;
+      case "j":
+        navigatePost(1);
+        break;
+      case "k":
+        navigatePost(-1);
+        break;
+    }
+  });
 
   /* ─── Progress bar + Back to top ─────────────────────── */
   var progressBar = document.getElementById("progress-bar");

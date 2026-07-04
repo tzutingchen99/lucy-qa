@@ -41,6 +41,10 @@
             ? "dark"
             : "light";
         document.documentElement.dataset.theme = theme;
+        var fs = parseFloat(localStorage.getItem("qa-font-size"));
+        if (fs && fs >= 0.9 && fs <= 1.2) {
+          document.documentElement.style.setProperty("--prose-size", fs + "rem");
+        }
       })();
     </script>
   </head>
@@ -55,6 +59,10 @@
           <a href="#/about" data-nav="about">About</a>
           <a href="#/search" data-nav="search">Search</a>
         </nav>
+        <div class="font-ctrl" role="group" aria-label="字體大小">
+          <button type="button" class="font-ctrl__btn" data-delta="-1" aria-label="縮小字體">A−</button>
+          <button type="button" class="font-ctrl__btn" data-delta="1" aria-label="放大字體">A+</button>
+        </div>
         <div class="theme" role="group" aria-label="Theme">
           <button
             type="button"
