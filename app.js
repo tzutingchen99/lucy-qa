@@ -188,6 +188,62 @@
     articleNode.appendChild(section);
   }
 
+  function addAuthorBio(articleNode) {
+    var bio = document.createElement("div");
+    bio.className = "bio";
+    var avatar = document.createElement("div");
+    avatar.className = "bio__avatar";
+    avatar.setAttribute("aria-hidden", "true");
+    avatar.textContent = "L";
+    var content = document.createElement("div");
+    content.className = "bio__content";
+    var name = document.createElement("p");
+    name.className = "bio__name";
+    name.textContent = "Lucy Chen";
+    var desc = document.createElement("p");
+    desc.className = "bio__desc";
+    desc.textContent = "做 QA 五年。寫自動化、AI 輔助測試，以及測試品味。";
+    var links = document.createElement("div");
+    links.className = "bio__links";
+    [
+      { href: "https://www.threads.com/@qauluru", text: "Threads" },
+      { href: "https://github.com/tzutingchen99", text: "GitHub" },
+      { href: "https://www.linkedin.com/in/ttc2024", text: "LinkedIn" },
+      { href: "https://tzutingchen99.github.io/lucy-cv/", text: "CV ↗" },
+    ].forEach(function (s) {
+      var a = document.createElement("a");
+      a.href = s.href;
+      a.textContent = s.text;
+      a.target = "_blank";
+      a.rel = "noopener";
+      links.appendChild(a);
+    });
+    content.appendChild(name);
+    content.appendChild(desc);
+    content.appendChild(links);
+    bio.appendChild(avatar);
+    bio.appendChild(content);
+    articleNode.appendChild(bio);
+  }
+
+  function addNewsletterBanner(articleNode) {
+    var cta = document.createElement("p");
+    cta.className = "newsletter-cta";
+    cta.appendChild(document.createTextNode("新文章 → "));
+    var threadsLink = document.createElement("a");
+    threadsLink.href = "https://www.threads.com/@qauluru";
+    threadsLink.textContent = "Threads @qauluru";
+    threadsLink.target = "_blank";
+    threadsLink.rel = "noopener";
+    cta.appendChild(threadsLink);
+    cta.appendChild(document.createTextNode("  ·  "));
+    var rssLink = document.createElement("a");
+    rssLink.href = "feed.xml";
+    rssLink.textContent = "RSS feed";
+    cta.appendChild(rssLink);
+    articleNode.appendChild(cta);
+  }
+
   function buildSeriesNav(meta, allPosts) {
     if (!meta.tag) return null;
     var series = allPosts
@@ -495,6 +551,21 @@
     );
     var proseEl = node.querySelector(".prose");
     proseEl.innerHTML = html;
+    var metaEl = node.querySelector(".post__meta");
+    if (metaEl) {
+      var copyLinkBtn = document.createElement("button");
+      copyLinkBtn.className = "copy-link-btn";
+      copyLinkBtn.textContent = "link";
+      copyLinkBtn.setAttribute("aria-label", "複製文章連結");
+      copyLinkBtn.addEventListener("click", function () {
+        navigator.clipboard.writeText(location.href).then(function () {
+          copyLinkBtn.textContent = "✓";
+          setTimeout(function () { copyLinkBtn.textContent = "link"; }, 2000);
+        }).catch(function () {});
+      });
+      metaEl.appendChild(document.createTextNode("  ·  "));
+      metaEl.appendChild(copyLinkBtn);
+    }
     var seriesNav = buildSeriesNav(meta, data.posts);
     if (seriesNav) node.insertBefore(seriesNav, proseEl);
     var toc = buildToc(proseEl);
@@ -502,6 +573,8 @@
     addHeadingAnchors(proseEl);
     addCopyButtons(proseEl);
     if (window.Prism) Prism.highlightAllUnder(proseEl);
+    addAuthorBio(node);
+    addNewsletterBanner(node);
     addPrevNext(node, meta, data.posts);
     render(node);
   }
