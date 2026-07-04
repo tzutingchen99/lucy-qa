@@ -32,6 +32,14 @@
       "tag": "術語",
       "summary": "Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。",
       "status": "published"
+    },
+    {
+      "slug": "common-terms",
+      "title": "現場高頻術語",
+      "date": "2026-07-04",
+      "tag": "術語",
+      "summary": "Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。",
+      "status": "published"
     }
   ]
 }
