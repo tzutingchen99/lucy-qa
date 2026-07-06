@@ -1,0 +1,14 @@
+{
+  "name": "lucy-qa",
+  "private": true,
+  "description": "QA 筆記 — 純靜態站。此 package.json 只給開發工具用（測試／驗證），網站本身零 build。",
+  "scripts": {
+    "validate": "node validate-content.js",
+    "feed": "node generate-feed.js",
+    "sitemap": "node generate-sitemap.js",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.0"
+  }
+}

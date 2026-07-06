@@ -5,3 +5,5 @@ node_modules/
 .idea/
 content/drafts/
 AUDIT.md
+playwright-report/
+test-results/

@@ -50,11 +50,22 @@ lucy-qa/
    }
    ```
 
-3. 執行 `node generate-feed.js` 更新 RSS feed
-4. 執行 `node generate-sitemap.js` 更新 Sitemap
-5. commit + push。完。
+3. commit + push。完。
+
+push 之後 GitHub Actions 會自動：驗證 `posts.json` ↔ `content/posts/*.md` 一致
+（slug 唯一、日期合法、檔案存在）、重新產生 feed.xml 和 sitemap.xml 並 commit、
+跑 Playwright 冒煙測試。
 
 文章順序按 `date` 自動排序，最新在前。
+
+## 本地開發指令
+
+```bash
+npm install                  # 第一次；裝測試工具（網站本身零 build，不需要）
+npm run validate             # 檢查 posts.json 與文章檔案一致
+npm test                     # Playwright 冒煙測試（會自己起 server）
+npm run feed && npm run sitemap   # 手動重生 feed / sitemap（CI 也會做）
+```
 
 ## 草稿 / 發佈
 
