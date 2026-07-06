@@ -29,8 +29,11 @@
     <script>
       // Count hash routes as distinct paths (default count.js drops the #hash,
       // so direct landings on posts were all attributed to the root path).
+      // Legacy #/posts/ links immediately redirect to the real post URL and
+      // get counted there — returning null skips the duplicate count here.
       window.goatcounter = {
         path: function () {
+          if (/^#\/posts\//.test(location.hash)) return null;
           return location.pathname + location.hash;
         },
       };

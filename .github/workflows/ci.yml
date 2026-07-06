@@ -17,24 +17,28 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Validate content
         run: node validate-content.js
 
-      - name: Regenerate feed and sitemap
+      - name: Regenerate feed, sitemap, and static post pages
         run: |
           node generate-feed.js
           node generate-sitemap.js
+          node generate-pages.js
 
       - name: Commit regenerated files if changed
         run: |
-          if ! git diff --quiet feed.xml sitemap.xml; then
+          git add feed.xml sitemap.xml posts
+          if git diff --cached --quiet; then
+            echo "產出物已是最新，不需 commit。"
+          else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add feed.xml sitemap.xml
-            git commit -m "chore: regenerate feed and sitemap [skip ci]"
+            git commit -m "chore: regenerate feed, sitemap, and post pages [skip ci]"
             git push
-          else
-            echo "feed.xml / sitemap.xml 已是最新，不需 commit。"
           fi
 
   smoke-tests:

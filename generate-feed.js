@@ -22,13 +22,16 @@ const posts = JSON.parse(fs.readFileSync("content/posts.json", "utf8")).posts
 
 const items = posts
   .map((p) => {
-    const url = `${SITE_URL}/#/posts/${p.slug}`;
+    const url = `${SITE_URL}/posts/${p.slug}/`;
+    // guid keeps the hash-era format as a stable opaque ID — changing guids
+    // would make every feed reader re-deliver all items as new.
+    const guid = `${SITE_URL}/#/posts/${p.slug}`;
     const pubDate = new Date(p.date + "T00:00:00+08:00").toUTCString();
     return [
       "  <item>",
       `    <title>${xmlEscape(p.title)}</title>`,
       `    <link>${url}</link>`,
-      `    <guid isPermaLink="true">${url}</guid>`,
+      `    <guid isPermaLink="false">${guid}</guid>`,
       `    <pubDate>${pubDate}</pubDate>`,
       p.summary ? `    <description>${xmlEscape(p.summary)}</description>` : "",
       "  </item>",

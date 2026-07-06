@@ -6,9 +6,11 @@
     "validate": "node validate-content.js",
     "feed": "node generate-feed.js",
     "sitemap": "node generate-sitemap.js",
+    "pages": "node generate-pages.js",
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.0"
+    "@playwright/test": "^1.54.0",
+    "marked": "^12.0.2"
   }
 }

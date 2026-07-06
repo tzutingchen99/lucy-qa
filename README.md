@@ -21,8 +21,10 @@ lucy-qa/
 ├── style.css               # 樣式（tokens 跟 lucy-cv 同步）
 ├── theme.js                # light/dark theme toggle
 ├── app.js                  # 客戶端路由 + markdown 渲染
-├── generate-feed.js        # 產生 feed.xml（發文後手動跑）
-├── generate-sitemap.js     # 產生 sitemap.xml（發文後手動跑）
+├── generate-feed.js        # 產生 feed.xml（CI 自動跑）
+├── generate-sitemap.js     # 產生 sitemap.xml（CI 自動跑）
+├── generate-pages.js       # 預渲染文章頁到 posts/{slug}/（CI 自動跑）
+├── posts/                  # 預渲染的文章頁（generate-pages.js 產出，會 commit）
 ├── feed.xml                # RSS feed（generate-feed.js 產出）
 ├── sitemap.xml             # Sitemap（generate-sitemap.js 產出）
 ├── robots.txt
@@ -53,8 +55,11 @@ lucy-qa/
 3. commit + push。完。
 
 push 之後 GitHub Actions 會自動：驗證 `posts.json` ↔ `content/posts/*.md` 一致
-（slug 唯一、日期合法、檔案存在）、重新產生 feed.xml 和 sitemap.xml 並 commit、
-跑 Playwright 冒煙測試。
+（slug 唯一、日期合法、檔案存在）、重新產生 feed.xml、sitemap.xml 和
+`posts/{slug}/` 預渲染頁並 commit、跑 Playwright 冒煙測試。
+
+文章的正式網址是 `/posts/{slug}/`（預渲染的真實頁面，爬蟲和社群分享
+都看得到完整內容）；舊的 `#/posts/{slug}` 連結會自動轉址過去。
 
 文章順序按 `date` 自動排序，最新在前。
 
@@ -64,7 +69,7 @@ push 之後 GitHub Actions 會自動：驗證 `posts.json` ↔ `content/posts/*.
 npm install                  # 第一次；裝測試工具（網站本身零 build，不需要）
 npm run validate             # 檢查 posts.json 與文章檔案一致
 npm test                     # Playwright 冒煙測試（會自己起 server）
-npm run feed && npm run sitemap   # 手動重生 feed / sitemap（CI 也會做）
+npm run feed && npm run sitemap && npm run pages   # 手動重生產出物（CI 也會做）
 ```
 
 ## 草稿 / 發佈

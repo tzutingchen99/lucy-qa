@@ -3,13 +3,23 @@
   var $main = document.getElementById("main");
   var postsIndex = null;
   var firstRoute = true;
-  var basePath = location.pathname;
+  var basePath = location.pathname.replace(/index\.html$/, "");
+  // Pre-rendered post pages (generate-pages.js) set these; app.js then skips
+  // the router and layers enhancements onto the existing DOM instead.
+  var STATIC_SLUG = document.body.dataset.staticPost || null;
+  var ROOT = document.body.dataset.root || "";
   // Heading deep link: the hash is taken by routing, so the target heading id
   // travels in the query string (?h=...). Consumed once on first post render.
   var pendingHeading = new URLSearchParams(location.search).get("h");
 
   function headingHref(id) {
+    // Static pages own their hash, so native fragments just work there.
+    if (STATIC_SLUG) return "#" + id;
     return "?h=" + encodeURIComponent(id) + location.hash;
+  }
+
+  function postHref(slug) {
+    return STATIC_SLUG ? "../" + slug + "/" : "posts/" + slug + "/";
   }
 
   /* ─── Marked config ───────────────────────────────────── */
@@ -184,7 +194,7 @@
       var li = document.createElement("li");
       li.className = "related__item";
       var a = document.createElement("a");
-      a.href = "#/posts/" + p.slug;
+      a.href = postHref(p.slug);
       a.textContent = p.title;
       var dateSpan = document.createElement("span");
       dateSpan.className = "related__date";
@@ -341,7 +351,7 @@
         li.appendChild(span);
       } else {
         var a = document.createElement("a");
-        a.href = "#/posts/" + p.slug;
+        a.href = postHref(p.slug);
         a.textContent = p.title;
         li.appendChild(a);
       }
@@ -366,7 +376,7 @@
       prevDir.className = "post-nav__dir";
       prevDir.textContent = "← 上一篇";
       var prevLink = document.createElement("a");
-      prevLink.href = "#/posts/" + older.slug;
+      prevLink.href = postHref(older.slug);
       prevLink.className = "post-nav__title";
       prevLink.textContent = older.title;
       prevEl.appendChild(prevDir);
@@ -380,7 +390,7 @@
       nextDir.className = "post-nav__dir";
       nextDir.textContent = "下一篇 →";
       var nextLink = document.createElement("a");
-      nextLink.href = "#/posts/" + newer.slug;
+      nextLink.href = postHref(newer.slug);
       nextLink.className = "post-nav__title";
       nextLink.textContent = newer.title;
       nextEl.appendChild(nextDir);
@@ -438,11 +448,27 @@
     if (!script) return;
     var base = script.getAttribute("data-goatcounter").replace(/\/count$/, "");
     spans.forEach(function (span) {
-      var path = span.getAttribute("data-path");
-      fetch(base + "/counter/" + encodeURIComponent(path) + ".json")
-        .then(function (r) { return r.json(); })
-        .then(function (d) { if (d.count) span.textContent = "瀏覽 " + d.count; })
-        .catch(function () {});
+      // Posts moved from #/posts/{slug} to real URLs; show the sum of both
+      // eras so counts don't visibly reset.
+      var paths = [
+        span.getAttribute("data-path"),
+        span.getAttribute("data-path-legacy"),
+      ].filter(Boolean);
+      Promise.all(
+        paths.map(function (path) {
+          return fetch(base + "/counter/" + encodeURIComponent(path) + ".json")
+            .then(function (r) { return r.ok ? r.json() : null; })
+            .then(function (d) {
+              return d && d.count
+                ? parseInt(String(d.count).replace(/[^\d]/g, ""), 10) || 0
+                : 0;
+            })
+            .catch(function () { return 0; });
+        })
+      ).then(function (counts) {
+        var total = counts.reduce(function (a, b) { return a + b; }, 0);
+        if (total) span.textContent = "瀏覽 " + total;
+      });
     });
   }
 
@@ -469,7 +495,7 @@
   /* ─── Data ────────────────────────────────────────────── */
   async function loadPostsIndex() {
     if (postsIndex) return postsIndex;
-    var res = await fetch("content/posts.json", { cache: "no-cache" });
+    var res = await fetch(ROOT + "content/posts.json", { cache: "no-cache" });
     if (!res.ok) throw new Error("Failed to load posts index");
     var data = await res.json();
     // Public site only renders "published" posts; drafts are admin-only.
@@ -484,7 +510,7 @@
   }
 
   async function loadMarkdown(path) {
-    var res = await fetch(path, { cache: "no-cache" });
+    var res = await fetch(ROOT + path, { cache: "no-cache" });
     if (!res.ok) throw new Error("Not found: " + path);
     return await res.text();
   }
@@ -553,15 +579,16 @@
         '<div class="post-card__meta">' +
         escapeHtml(fmtDate(p.date)) +
         '<span class="post-card__views"><span class="goatcounter-count" data-path="' +
-        escapeHtml(basePath) + '#/posts/' +
-        escapeHtml(p.slug) +
+        escapeHtml(basePath + "posts/" + p.slug + "/") +
+        '" data-path-legacy="' +
+        escapeHtml(basePath + "#/posts/" + p.slug) +
         '"></span></span>' +
         "</div>" +
         '<div class="post-card__body">' +
         // Real link so keyboard / screen-reader users can open the post;
         // the card-wide click listener is a pointer convenience on top.
-        '<h3 class="post-card__title"><a href="#/posts/' +
-        escapeHtml(p.slug) +
+        '<h3 class="post-card__title"><a href="' +
+        escapeHtml(postHref(p.slug)) +
         '">' +
         escapeHtml(p.title) +
         "</a></h3>" +
@@ -577,7 +604,7 @@
         "</article>"
     );
     card.addEventListener("click", function () {
-      location.hash = "#/posts/" + p.slug;
+      location.href = postHref(p.slug);
     });
     var tagBtn = card.querySelector(".post-card__tag");
     if (tagBtn) {
@@ -590,7 +617,8 @@
   }
 
   async function viewPost(slug) {
-    markNav("posts");
+    // Posts live at real URLs now (generate-pages.js); this route only
+    // forwards old #/posts/ links there. Unknown slugs still get a nice 404.
     var data = await loadPostsIndex();
     var meta = data.posts.find(function (p) {
       return p.slug === slug;
@@ -599,64 +627,59 @@
       showError("Post not found (or still in draft)");
       return;
     }
-    setTitle(meta.title, meta.summary);
-    var md = await loadMarkdown("content/posts/" + slug + ".md");
-    var mins = readingTime(md);
-    var html = marked.parse(md);
-    var node = el(
-      '<article class="post">' +
-        '<a href="#/posts" class="post__back">← All posts</a>' +
-        '<p class="post__meta">' +
-        escapeHtml(fmtDate(meta.date)) +
-        (meta.updated ? "  ·  更新 " + escapeHtml(fmtDate(meta.updated)) : "") +
-        (meta.tag ? '  ·  <a href="#/tags/' + escapeHtml(meta.tag) + '" class="post__tag-link">' + escapeHtml(meta.tag) + '</a>' : "") +
-        "  ·  " + mins + " min read" +
-        '  ·  <span class="goatcounter-count" data-path="' +
-        escapeHtml(basePath) + '#/posts/' +
-        escapeHtml(slug) +
-        '"></span>' +
-        "</p>" +
-        '<h1 class="post__title">' +
-        escapeHtml(meta.title) +
-        "</h1>" +
-        '<div class="prose"></div>' +
-        "</article>"
-    );
-    var proseEl = node.querySelector(".prose");
-    proseEl.innerHTML = html;
+    var fragment = pendingHeading ? "#" + pendingHeading : "";
+    location.replace(basePath + "posts/" + slug + "/" + fragment);
+  }
+
+  function addCopyLinkButton(metaEl) {
+    var copyLinkBtn = document.createElement("button");
+    copyLinkBtn.className = "copy-link-btn";
+    copyLinkBtn.textContent = "link";
+    copyLinkBtn.setAttribute("aria-label", "複製文章連結");
+    copyLinkBtn.addEventListener("click", function () {
+      navigator.clipboard.writeText(location.href).then(function () {
+        copyLinkBtn.textContent = "✓";
+        setTimeout(function () { copyLinkBtn.textContent = "link"; }, 2000);
+      }).catch(function () {});
+    });
+    metaEl.appendChild(document.createTextNode("  ·  "));
+    metaEl.appendChild(copyLinkBtn);
+  }
+
+  /* ─── Static post pages (pre-rendered by generate-pages.js) ── */
+  async function enhanceStaticPost() {
+    var article = document.querySelector("article.post");
+    if (!article) return;
+    var proseEl = article.querySelector(".prose");
     processCallouts(proseEl);
-    var metaEl = node.querySelector(".post__meta");
-    if (metaEl) {
-      var copyLinkBtn = document.createElement("button");
-      copyLinkBtn.className = "copy-link-btn";
-      copyLinkBtn.textContent = "link";
-      copyLinkBtn.setAttribute("aria-label", "複製文章連結");
-      copyLinkBtn.addEventListener("click", function () {
-        navigator.clipboard.writeText(location.href).then(function () {
-          copyLinkBtn.textContent = "✓";
-          setTimeout(function () { copyLinkBtn.textContent = "link"; }, 2000);
-        }).catch(function () {});
-      });
-      metaEl.appendChild(document.createTextNode("  ·  "));
-      metaEl.appendChild(copyLinkBtn);
+    var metaEl = article.querySelector(".post__meta");
+    if (metaEl) addCopyLinkButton(metaEl);
+
+    var data = null;
+    try {
+      data = await loadPostsIndex();
+    } catch (err) {
+      console.error(err); // index unavailable → skip nav extras, keep the rest
     }
-    var seriesNav = buildSeriesNav(meta, data.posts);
-    if (seriesNav) node.insertBefore(seriesNav, proseEl);
-    var toc = buildToc(proseEl);
-    if (toc) node.insertBefore(toc, proseEl);
+    var meta =
+      data &&
+      data.posts.find(function (p) {
+        return p.slug === STATIC_SLUG;
+      });
+    if (meta) {
+      var seriesNav = buildSeriesNav(meta, data.posts);
+      if (seriesNav) article.insertBefore(seriesNav, proseEl);
+    }
+    var toc = buildToc(proseEl); // before addHeadingAnchors — TOC reads heading text
+    if (toc) article.insertBefore(toc, proseEl);
     addHeadingAnchors(proseEl);
     addCopyButtons(proseEl);
     if (window.Prism) Prism.highlightAllUnder(proseEl);
-    addLikeButton(node, slug);
-    addAuthorBio(node);
-    addNewsletterBanner(node);
-    addPrevNext(node, meta, data.posts);
-    render(node);
-    if (pendingHeading) {
-      var target = document.getElementById(pendingHeading);
-      if (target) target.scrollIntoView();
-      pendingHeading = null;
-    }
+    addLikeButton(article, STATIC_SLUG);
+    addAuthorBio(article);
+    addNewsletterBanner(article);
+    if (meta) addPrevNext(article, meta, data.posts);
+    fetchViewCounts();
   }
 
   async function viewTag(tag) {
@@ -782,12 +805,10 @@
 
   /* ─── Keyboard shortcuts ─────────────────────────────── */
   function navigatePost(direction) {
-    var hash = location.hash;
-    if (!hash.startsWith("#/posts/") || !postsIndex) return;
-    var cur = hash.slice("#/posts/".length);
-    var idx = postsIndex.posts.findIndex(function (p) { return p.slug === cur; });
+    if (!STATIC_SLUG || !postsIndex) return; // posts are static pages now
+    var idx = postsIndex.posts.findIndex(function (p) { return p.slug === STATIC_SLUG; });
     var target = direction > 0 ? postsIndex.posts[idx - 1] : postsIndex.posts[idx + 1];
-    if (target) location.hash = "#/posts/" + target.slug;
+    if (target) location.href = postHref(target.slug);
   }
 
   document.addEventListener("keydown", function (e) {
@@ -796,7 +817,8 @@
     switch (e.key) {
       case "/":
         e.preventDefault();
-        location.hash = "#/search";
+        if (STATIC_SLUG) location.href = ROOT + "#/search";
+        else location.hash = "#/search";
         break;
       case "Escape":
         if (location.hash === "#/search") location.hash = "#/";
@@ -842,13 +864,17 @@
 
   window.addEventListener("scroll", updateScroll, { passive: true });
 
-  window.addEventListener("hashchange", route);
   document.addEventListener("DOMContentLoaded", function () {
     if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
       Prism.plugins.autoloader.languages_path =
         "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";
     }
-    route();
+    if (STATIC_SLUG) {
+      enhanceStaticPost();
+    } else {
+      window.addEventListener("hashchange", route);
+      route();
+    }
     fetchViewStats();
   });
 })();

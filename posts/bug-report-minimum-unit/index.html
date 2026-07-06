@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bug Report 的最小單位是什麼 — QA 筆記</title>
+    <meta name="description" content="收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。" />
+    <link rel="canonical" href="https://tzutingchen99.github.io/lucy-qa/posts/bug-report-minimum-unit/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="QA 筆記" />
+    <meta property="og:title" content="Bug Report 的最小單位是什麼" />
+    <meta property="og:description" content="收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。" />
+    <meta property="og:url" content="https://tzutingchen99.github.io/lucy-qa/posts/bug-report-minimum-unit/" />
+    <meta property="article:published_time" content="2026-07-04" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Bug Report 的最小單位是什麼" />
+    <meta name="twitter:description" content="收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Bug Report 的最小單位是什麼","description":"收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。","url":"https://tzutingchen99.github.io/lucy-qa/posts/bug-report-minimum-unit/","datePublished":"2026-07-04","dateModified":"2026-07-04","inLanguage":"zh-Hant","author":{"@type":"Person","name":"Lucy Chen","url":"https://tzutingchen99.github.io/lucy-cv/"}}</script>
+    <link rel="alternate" type="application/rss+xml" title="QA 筆記 RSS" href="../../feed.xml" />
+    <link rel="icon" type="image/png" href="../../letter-q.png" />
+    <link rel="apple-touch-icon" href="../../letter-q.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../style.css" />
+    <script>
+      window.goatcounter = {
+        path: function () {
+          return location.pathname + location.hash;
+        },
+      };
+    </script>
+    <script data-goatcounter="https://tzu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script>
+      // Early theme detection to avoid flash (keep in sync with index.html)
+      (function () {
+        var saved = localStorage.getItem("qa-theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme =
+          saved === "dark" || saved === "light"
+            ? saved
+            : prefersDark
+            ? "dark"
+            : "light";
+        document.documentElement.dataset.theme = theme;
+        var fs = parseFloat(localStorage.getItem("qa-font-size"));
+        if (fs && fs >= 0.9 && fs <= 1.2) {
+          document.documentElement.style.setProperty("--prose-size", fs + "rem");
+        }
+      })();
+    </script>
+  </head>
+  <body data-static-post="bug-report-minimum-unit" data-root="../../">
+    <div id="progress-bar" aria-hidden="true"></div>
+    <div class="grid">
+      <header class="strip" role="banner">
+        <a href="../../" class="strip__item strip__brand">QA / Lucy</a>
+        <nav class="strip__nav" aria-label="Primary">
+          <a href="../../#/">Home</a>
+          <a href="../../#/posts" aria-current="page">Posts</a>
+          <a href="../../#/about">About</a>
+          <a href="../../#/search">Search</a>
+        </nav>
+        <div class="font-ctrl" role="group" aria-label="字體大小">
+          <button type="button" class="font-ctrl__btn" data-delta="-1" aria-label="縮小字體">A−</button>
+          <button type="button" class="font-ctrl__btn" data-delta="1" aria-label="放大字體">A+</button>
+        </div>
+        <div class="theme" role="group" aria-label="Theme">
+          <button type="button" class="theme__btn" data-theme="light" aria-label="Light theme">○</button>
+          <span class="theme__sep" aria-hidden="true">·</span>
+          <button type="button" class="theme__btn" data-theme="dark" aria-label="Dark theme">●</button>
+        </div>
+      </header>
+
+      <main id="main" class="main" tabindex="-1">
+        <article class="post">
+          <a href="../../#/posts" class="post__back">← All posts</a>
+          <p class="post__meta">2026.07.04  ·  <a href="../../#/tags/Bug Report" class="post__tag-link">Bug Report</a>  ·  2 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/bug-report-minimum-unit/" data-path-legacy="/lucy-qa/#/posts/bug-report-minimum-unit"></span></p>
+          <h1 class="post__title">Bug Report 的最小單位是什麼</h1>
+          <div class="prose">
+<h1 id="Bug-Report-的最小單位是什麼">Bug Report 的最小單位是什麼</h1>
+<h2 id="為什麼很多-bug-report-沒辦法被用">為什麼很多 bug report 沒辦法被用</h2>
+<p>收到一個 bug report 說「這個壞掉了」——然後呢？</p>
+<p>RD 不知道怎麼重現，QA 不知道要驗什麼，PM 不知道這是不是他說的那個問題。這個 bug 在系統裡掛著，沒人動，因為沒人知道從哪裡開始。</p>
+<p>問題不是懶，是那個 bug report 本來就缺了一個東西：<strong>可以被重現的步驟</strong>。</p>
+<hr>
+<h2 id="可重現，是第一條">可重現，是第一條</h2>
+<p>一個 bug report 最小要包含的東西，只有一個：讓別人能重現這個問題的足夠資訊。</p>
+<p>不是描述症狀，是給重現路徑。</p>
+<p><strong>症狀</strong>：「購物車沒辦法結帳」</p>
+<p><strong>重現路徑</strong>：</p>
+<ol>
+<li>登入帳號 A（測試帳號資訊附上）</li>
+<li>加入商品 X 到購物車</li>
+<li>點擊結帳</li>
+<li>在付款方式選「信用卡」</li>
+<li>點擊「確認付款」</li>
+<li>出現 500 錯誤，訂單未建立</li>
+</ol>
+<p>這兩個描述說的是同一件事，但只有第二個讓 RD 可以直接動手。</p>
+<hr>
+<h2 id="「最小」不代表「最少字」">「最小」不代表「最少字」</h2>
+<p>最小單位不是字數最少，是讓問題能被重現的<strong>最小資訊集合</strong>。</p>
+<p>有時候這需要很多字，因為重現條件很特定：</p>
+<ul>
+<li>特定帳號、特定權限</li>
+<li>特定瀏覽器版本</li>
+<li>特定時間點（例如跨日的邊界）</li>
+<li>特定資料狀態（例如購物車裡有某種組合的商品）</li>
+</ul>
+<p>把這些都寫進去，不是囉嗦，是讓 bug 可以被解決的必要條件。</p>
+<hr>
+<h2 id="預期行為，是容易被忘的那個">預期行為，是容易被忘的那個</h2>
+<p>除了重現步驟，還有一個常被省略的欄位：<strong>預期結果是什麼</strong>。</p>
+<p>有些 bug 看起來「很明顯」，所以沒人覺得需要寫預期。但「明顯」是主觀的——QA 覺得明顯，RD 不一定，PM 更不一定。</p>
+<p>特別是當「壞掉的行為」跟「舊有行為」有點像的時候，預期結果說清楚，就是讓三方不用再開一次會對齊的方式。</p>
+<hr>
+<h2 id="一個結論">一個結論</h2>
+<blockquote>
+<p><strong>Bug report 的最小單位不是一句話，是一條可重現的路徑 + 預期結果。少了這兩個，它不是 bug report，是問題描述。</strong></p>
+</blockquote>
+
+          </div>
+        </article>
+      </main>
+
+      <footer class="strip strip--foot" role="contentinfo">
+        <span class="strip__item">QA / Lucy</span>
+        <a href="https://tzutingchen99.github.io/lucy-cv/" class="strip__item">CV ↗</a>
+        <a
+          href="https://www.threads.com/@qauluru"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="strip__item"
+          >Threads ↗</a
+        >
+        <a href="../../feed.xml" class="strip__item">RSS ↗</a>
+        <span id="today-views" class="strip__item" aria-live="polite"></span>
+        <span id="total-views" class="strip__item" aria-live="polite"></span>
+        <span class="strip__item strip__item--end">2026</span>
+      </footer>
+    </div>
+
+    <button id="back-to-top" aria-label="回到頂部">↑</button>
+    <script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../../theme.js"></script>
+    <script src="../../app.js"></script>
+  </body>
+</html>
