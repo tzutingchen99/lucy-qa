@@ -17,19 +17,20 @@ python3 -m http.server 8000
 
 ```
 lucy-qa/
-├── index.html              # SPA shell（首頁 / 文章列表 / 文章內頁 / about）
+├── index.html              # SPA shell（首頁 / 文章列表 / 文章內頁 / about / search）
 ├── style.css               # 樣式（tokens 跟 lucy-cv 同步）
 ├── theme.js                # light/dark theme toggle
 ├── app.js                  # 客戶端路由 + markdown 渲染
+├── generate-feed.js        # 產生 feed.xml（發文後手動跑）
+├── generate-sitemap.js     # 產生 sitemap.xml（發文後手動跑）
+├── feed.xml                # RSS feed（generate-feed.js 產出）
+├── sitemap.xml             # Sitemap（generate-sitemap.js 產出）
+├── robots.txt
 ├── content/
 │   ├── posts.json          # 文章 metadata
 │   ├── about.md            # About 頁內容
-│   ├── posts/              # 已發布文章
-│   │   ├── hello.md
-│   │   ├── intent-vs-implementation.md
-│   │   ├── bug-language.md
-│   │   └── test-docs.md
-│   └── drafts/             # 草稿（不 deploy、不公開）
+│   ├── posts/              # 已發布文章（*.md，slug 對應 posts.json）
+│   └── drafts/             # 草稿（gitignore — 不進 repo、不公開，注意自行備份）
 └── README.md
 ```
 

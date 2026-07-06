@@ -4,6 +4,13 @@
   var postsIndex = null;
   var firstRoute = true;
   var basePath = location.pathname;
+  // Heading deep link: the hash is taken by routing, so the target heading id
+  // travels in the query string (?h=...). Consumed once on first post render.
+  var pendingHeading = new URLSearchParams(location.search).get("h");
+
+  function headingHref(id) {
+    return "?h=" + encodeURIComponent(id) + location.hash;
+  }
 
   /* ─── Marked config ───────────────────────────────────── */
   if (window.marked) {
@@ -50,11 +57,12 @@
       li.className =
         "toc__item" + (h.tagName === "H3" ? " toc__item--h3" : "");
       var a = document.createElement("a");
-      a.href = "#" + h.id;
+      a.href = headingHref(h.id);
       a.textContent = h.textContent;
       a.addEventListener("click", function (e) {
         e.preventDefault();
         h.scrollIntoView({ behavior: "smooth" });
+        history.replaceState(null, "", headingHref(h.id));
       });
       li.appendChild(a);
       ul.appendChild(li);
@@ -146,12 +154,13 @@
       if (!h.id) h.id = slugify(h.textContent);
       var a = document.createElement("a");
       a.className = "heading-anchor";
-      a.href = "#" + h.id;
+      a.href = headingHref(h.id);
       a.setAttribute("aria-hidden", "true");
       a.textContent = "#";
       a.addEventListener("click", function (e) {
         e.preventDefault();
         h.scrollIntoView({ behavior: "smooth" });
+        history.replaceState(null, "", headingHref(h.id));
       });
       h.appendChild(a);
     });
@@ -549,9 +558,13 @@
         '"></span></span>' +
         "</div>" +
         '<div class="post-card__body">' +
-        '<h3 class="post-card__title">' +
+        // Real link so keyboard / screen-reader users can open the post;
+        // the card-wide click listener is a pointer convenience on top.
+        '<h3 class="post-card__title"><a href="#/posts/' +
+        escapeHtml(p.slug) +
+        '">' +
         escapeHtml(p.title) +
-        "</h3>" +
+        "</a></h3>" +
         (p.summary
           ? '<p class="post-card__summary">' +
             escapeHtml(p.summary) +
@@ -639,6 +652,11 @@
     addNewsletterBanner(node);
     addPrevNext(node, meta, data.posts);
     render(node);
+    if (pendingHeading) {
+      var target = document.getElementById(pendingHeading);
+      if (target) target.scrollIntoView();
+      pendingHeading = null;
+    }
   }
 
   async function viewTag(tag) {
@@ -689,6 +707,11 @@
   /* ─── Router ──────────────────────────────────────────── */
   async function route() {
     var hash = location.hash.replace(/^#/, "") || "/";
+    // A ?h= heading deep link belongs to the page it was copied from; drop it
+    // when the route changes so it doesn't leak onto the next page's URL.
+    if (!firstRoute && new URLSearchParams(location.search).has("h")) {
+      history.replaceState(null, "", location.pathname + location.hash);
+    }
     try {
       if (hash === "/" || hash === "") {
         await viewHome();
@@ -718,7 +741,14 @@
   }
 
   function fetchViewStats() {
-    var today = new Date().toISOString().slice(0, 10);
+    // Local date, not UTC — otherwise 00:00–08:00 (UTC+8) shows yesterday's count.
+    var now = new Date();
+    var today =
+      now.getFullYear() +
+      "-" +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(now.getDate()).padStart(2, "0");
 
     fetch("https://tzu.goatcounter.com/counter/TOTAL.json?start=" + today)
       .then(function (r) { return r.json(); })

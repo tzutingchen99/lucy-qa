@@ -26,6 +26,15 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+    <script>
+      // Count hash routes as distinct paths (default count.js drops the #hash,
+      // so direct landings on posts were all attributed to the root path).
+      window.goatcounter = {
+        path: function () {
+          return location.pathname + location.hash;
+        },
+      };
+    </script>
     <script data-goatcounter="https://tzu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     <script>
       // Early theme detection to avoid flash
@@ -98,7 +107,7 @@
           target="_blank"
           rel="noopener noreferrer"
           class="strip__item"
-          >Threads ↗</
+          >Threads ↗</a
         >
         <a href="feed.xml" class="strip__item">RSS ↗</a>
         <span id="today-views" class="strip__item" aria-live="polite"></span>
