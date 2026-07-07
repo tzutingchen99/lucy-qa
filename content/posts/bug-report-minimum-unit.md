@@ -1,5 +1,7 @@
 # Bug Report 的最小單位是什麼
 
+> [!TLDR] Bug report 的最小單位 = 一條可重現的路徑 + 預期結果。少了這兩個，它不是 bug report，是問題描述。
+
 ## 為什麼很多 bug report 沒辦法被用
 
 收到一個 bug report 說「這個壞掉了」——然後呢？

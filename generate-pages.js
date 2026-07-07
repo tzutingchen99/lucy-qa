@@ -7,7 +7,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { marked } = require("marked");
+const { renderProse, mdToText } = require("./lib/markdown");
 
 const SITE_URL = "https://tzutingchen99.github.io/lucy-qa";
 const SITE_PATH = "/lucy-qa/"; // production pathname, used for view-count attribution
@@ -22,20 +22,6 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-// Must produce the same ids as slugify() in app.js (?h= deep links, TOC).
-function slugify(text) {
-  return text.trim().replace(/\s+/g, "-").replace(/[<>&"']/g, "");
-}
-
-function decodeEntities(s) {
-  return s
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-}
-
 // Same formula as readingTime() in app.js.
 function readingTime(text) {
   const clean = text.replace(/[#*`_~\[\]()>|]/g, " ").replace(/\s+/g, " ");
@@ -47,16 +33,6 @@ function readingTime(text) {
 function fmtDate(iso) {
   return iso ? iso.replace(/-/g, ".") : "";
 }
-
-marked.setOptions({ breaks: false, gfm: true });
-marked.use({
-  renderer: {
-    heading(text, level) {
-      const plain = decodeEntities(text.replace(/<[^>]*>/g, ""));
-      return `<h${level} id="${esc(slugify(plain))}">${text}</h${level}>\n`;
-    },
-  },
-});
 
 const posts = JSON.parse(fs.readFileSync("content/posts.json", "utf8"))
   .posts.filter((p) => p.status === "published")
@@ -270,7 +246,7 @@ let count = 0;
 posts.forEach((p) => {
   const mdPath = path.join("content", "posts", p.slug + ".md");
   const md = fs.readFileSync(mdPath, "utf8");
-  const proseHtml = marked.parse(md);
+  const proseHtml = renderProse(md);
   const dir = path.join("posts", p.slug);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, "index.html"), pageHtml(p, proseHtml, readingTime(md)), "utf8");
@@ -291,18 +267,6 @@ if (fs.existsSync("posts")) {
 console.log(`Generated ${count} static post pages under posts/.`);
 
 /* ─── Full-text search index ─────────────────────────────── */
-function mdToText(md) {
-  return md
-    .replace(/^```.*$/gm, " ") // keep code content, drop fence lines
-    .replace(/`([^`]*)`/g, "$1")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/^#+\s*/gm, "")
-    .replace(/[*_~>|]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 const searchIndex = posts.map((p) => ({
   slug: p.slug,
   title: p.title,

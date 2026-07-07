@@ -6,7 +6,8 @@
       "date": "2026-06-21",
       "tag": "關於",
       "summary": "為什麼開這個站，以及接下來會在這裡寫什麼。",
-      "status": "published"
+      "status": "published",
+      "updated": "2026-07-07"
     },
     {
       "slug": "intent-vs-implementation",
@@ -14,13 +15,14 @@
       "date": "2026-06-22",
       "tag": "原則",
       "summary": "重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。",
-      "status": "published"
+      "status": "published",
+      "updated": "2026-07-07"
     },
     {
       "slug": "bug-language",
       "title": "Bug 的語言",
       "date": "2026-06-24",
-      "updated": "2026-07-04",
+      "updated": "2026-07-07",
       "tag": "術語",
       "summary": "Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。",
       "status": "published"
@@ -31,7 +33,8 @@
       "date": "2026-06-28",
       "tag": "術語",
       "summary": "Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。",
-      "status": "published"
+      "status": "published",
+      "updated": "2026-07-07"
     },
     {
       "slug": "common-terms",
@@ -39,7 +42,8 @@
       "date": "2026-07-04",
       "tag": "術語",
       "summary": "Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。",
-      "status": "published"
+      "status": "published",
+      "updated": "2026-07-07"
     },
     {
       "slug": "bug-report-minimum-unit",
@@ -47,7 +51,8 @@
       "date": "2026-07-04",
       "tag": "Bug Report",
       "summary": "收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。",
-      "status": "published"
+      "status": "published",
+      "updated": "2026-07-07"
     }
   ]
 }

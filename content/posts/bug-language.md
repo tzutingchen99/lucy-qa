@@ -1,5 +1,7 @@
 # Bug 的語言
 
+> [!TLDR] Bug、Defect、Issue、Incident 用在不同場合；Severity 是技術影響、Priority 是處理順序——前者 QA 定，後者團隊一起定。能 reproduce 是好 bug report 的第一條，其他都是裝飾。
+
 ## 一個開會場景
 
 「這個 bug 很嚴重，要馬上修。」

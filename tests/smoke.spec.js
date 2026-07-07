@@ -63,6 +63,12 @@ test("首頁原始 HTML 就有文章連結（爬蟲可見，不靠 JS）", async
   }
 });
 
+test("TLDR callout 在原始 HTML 就已轉換（爬蟲 / RSS 可見）", async ({ request }) => {
+  const html = await (await request.get("/posts/bug-language/")).text();
+  expect(html).toContain('class="callout callout--tldr"');
+  expect(html).not.toContain("[!TLDR]");
+});
+
 test("靜態文章頁預渲染了系列導航與上下篇", async ({ request }) => {
   // 挑一篇同 tag ≥2 篇的文章（一定有系列導航）
   const tagged = posts.find(

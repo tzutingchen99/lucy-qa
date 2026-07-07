@@ -3,7 +3,7 @@
 // Reads content/posts.json and writes feed.xml
 
 const fs = require("fs");
-const { marked } = require("marked");
+const { renderProse } = require("./lib/markdown");
 
 const SITE_URL = "https://tzutingchen99.github.io/lucy-qa";
 const SITE_TITLE = "QA 筆記";
@@ -30,8 +30,10 @@ const items = posts
     const pubDate = new Date(p.date + "T00:00:00+08:00").toUTCString();
     const md = fs.readFileSync(`content/posts/${p.slug}.md`, "utf8");
     // Full article HTML for feed readers; CDATA so we don't double-escape.
-    const contentHtml = marked
-      .parse(md)
+    // Relative post links (../slug/) only resolve on the site — make them
+    // absolute for feed readers.
+    const contentHtml = renderProse(md)
+      .replace(/href="\.\.\//g, `href="${SITE_URL}/posts/`)
       .replace(/\]\]>/g, "]]&gt;");
     return [
       "  <item>",
