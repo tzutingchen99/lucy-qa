@@ -179,6 +179,7 @@ ${p.updated ? `    <meta property="article:modified_time" content="${p.updated}"
         <nav class="strip__nav" aria-label="Primary">
           <a href="${ROOT}#/">Home</a>
           <a href="${ROOT}#/posts" aria-current="page">Posts</a>
+          <a href="${ROOT}#/collections">Collections</a>
           <a href="${ROOT}#/about">About</a>
           <a href="${ROOT}#/search">Search</a>
         </nav>

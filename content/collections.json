@@ -1,0 +1,16 @@
+{
+  "collections": [
+    {
+      "slug": "qa-beginner",
+      "title": "剛入行 QA",
+      "description": "第一份 QA 工作的前六個月，最需要對齊的是語言。這條路線照順序讀：先知道自己在測什麼層級，再把 bug、文件、設計方法、現場高頻詞一次說清楚。",
+      "posts": ["test-levels", "bug-language", "test-docs", "test-design", "common-terms"]
+    },
+    {
+      "slug": "bug-communication",
+      "title": "Bug 溝通",
+      "description": "Bug 不是找到就結束了——要讓對的人理解它、處理它。從說對詞，到寫出一條可以被重現的路徑。",
+      "posts": ["bug-language", "bug-report-minimum-unit"]
+    }
+  ]
+}

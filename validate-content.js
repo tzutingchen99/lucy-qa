@@ -65,6 +65,37 @@ fs.readdirSync(POSTS_DIR)
       errors.push(`${POSTS_DIR}/${f}: 沒有登記在 posts.json（無法被讀者看到）`);
   });
 
+// Collections must reference existing published posts.
+const colsPath = path.join("content", "collections.json");
+if (fs.existsSync(colsPath)) {
+  let cols = null;
+  try {
+    cols = JSON.parse(fs.readFileSync(colsPath, "utf8")).collections;
+  } catch (e) {
+    errors.push("content/collections.json 不是合法 JSON: " + e.message);
+  }
+  if (cols) {
+    const colSeen = new Set();
+    cols.forEach((c, i) => {
+      const where = `collections[${i}]` + (c.slug ? ` (${c.slug})` : "");
+      ["slug", "title", "posts"].forEach((k) => {
+        if (!c[k] || (k === "posts" && !c[k].length))
+          errors.push(`${where}: 缺少 "${k}"`);
+      });
+      if (c.slug) {
+        if (colSeen.has(c.slug)) errors.push(`${where}: slug 重複`);
+        colSeen.add(c.slug);
+      }
+      (c.posts || []).forEach((s) => {
+        const p = posts.find((x) => x.slug === s);
+        if (!p) errors.push(`${where}: 找不到文章 "${s}"`);
+        else if (p.status !== "published")
+          errors.push(`${where}: "${s}" 不是 published，不能進合集`);
+      });
+    });
+  }
+}
+
 if (errors.length) {
   errors.forEach((e) => console.error("✗ " + e));
   console.error(`\n${errors.length} 個問題。`);

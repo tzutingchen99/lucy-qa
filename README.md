@@ -35,6 +35,7 @@ lucy-qa/
 ├── robots.txt
 ├── content/
 │   ├── posts.json          # 文章 metadata
+│   ├── collections.json    # 合集（有排序的閱讀路線，#/collections）
 │   ├── about.md            # About 頁內容
 │   ├── posts/              # 已發布文章（*.md，slug 對應 posts.json）
 │   └── drafts/             # 草稿（gitignore — 不進 repo、不公開，注意自行備份）
@@ -68,6 +69,13 @@ push 之後 GitHub Actions 會自動：驗證 `posts.json` ↔ `content/posts/*.
 都看得到完整內容）；舊的 `#/posts/{slug}` 連結會自動轉址過去。
 
 文章順序按 `date` 自動排序，最新在前。
+
+## 合集（閱讀路線）
+
+`content/collections.json` 定義有順序的閱讀路線（跟 tag 不同：tag 是分類，
+合集是排好序的推薦讀法），顯示在 `#/collections`，右側選單切換。
+只能收錄 published 文章（CI 會驗證）。新增合集：在 `collections` 陣列加
+`{ slug, title, description, posts: [slug...] }`。
 
 ## 本地開發指令
 

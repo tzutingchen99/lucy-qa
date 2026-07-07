@@ -1250,3 +1250,132 @@ a.breadcrumb__item:hover {
     display: none;
   }
 }
+
+/* ─── Collections（合集）───────────────────────────────── */
+.collections-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12rem;
+  gap: 3rem;
+  align-items: start;
+}
+
+.collections-menu {
+  position: sticky;
+  top: 2rem;
+  border-left: 1px solid var(--rule-soft);
+  padding-left: 1.25rem;
+}
+
+.collections-menu__label {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 0.75rem;
+}
+
+.collections-menu__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.collections-menu__list a {
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.collections-menu__list a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.collections-menu__list a[aria-current="true"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.collections-menu__count {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--ink-4);
+}
+
+.collection-list {
+  list-style: none;
+  counter-reset: collection;
+  margin-top: 0.5rem;
+}
+
+.collection-item {
+  counter-increment: collection;
+  position: relative;
+  padding: 1.1rem 0 1.1rem 3rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.collection-item::before {
+  content: counter(collection, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--ink-4);
+}
+
+.collection-item__title {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.collection-item__title:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+
+.collection-item__summary {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin-top: 0.35rem;
+  max-width: 38rem;
+}
+
+.collection-item__meta {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-4);
+  margin-top: 0.45rem;
+}
+
+@media (max-width: 720px) {
+  .collections-page {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .collections-menu {
+    order: -1;
+    position: static;
+    border-left: 0;
+    padding-left: 0;
+    border-bottom: 1px solid var(--rule-soft);
+    padding-bottom: 1rem;
+  }
+  .collections-menu__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}

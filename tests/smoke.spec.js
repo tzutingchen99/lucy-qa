@@ -144,6 +144,25 @@ test("搜尋能過濾出文章", async ({ page }) => {
   await expect(results.first()).toContainText(posts[0].title.slice(0, 4));
 });
 
+test("合集頁：右側選單與預設合集內容", async ({ page }) => {
+  const collections = require("../content/collections.json").collections;
+  await page.goto("/#/collections");
+  await expect(page.locator(".collections-menu a")).toHaveCount(collections.length);
+  await expect(page.locator(".collection-item")).toHaveCount(collections[0].posts.length);
+  // 文章連結指向真實頁
+  const href = await page.locator(".collection-item__title").first().getAttribute("href");
+  expect(href).toMatch(/^posts\/.+\/$/);
+});
+
+test("合集頁：選單可切換合集", async ({ page }) => {
+  const collections = require("../content/collections.json").collections;
+  test.skip(collections.length < 2, "只有一個合集");
+  await page.goto("/#/collections");
+  await page.locator(".collections-menu a", { hasText: collections[1].title }).click();
+  await expect(page.locator(".collection-item")).toHaveCount(collections[1].posts.length);
+  await expect(page.locator(".hero__title")).toHaveText(collections[1].title);
+});
+
 test("標籤頁：breadcrumb 與篇數正確", async ({ page }) => {
   const tag = posts[0].tag;
   const count = posts.filter((p) => p.tag === tag).length;

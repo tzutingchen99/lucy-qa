@@ -478,6 +478,102 @@
     );
   }
 
+  /* ─── Collections (curated reading paths) ────────────── */
+  var collectionsIndex = null;
+
+  async function loadCollections() {
+    if (collectionsIndex) return collectionsIndex;
+    var res = await fetch(ROOT + "content/collections.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error("Failed to load collections");
+    collectionsIndex = (await res.json()).collections || [];
+    return collectionsIndex;
+  }
+
+  async function viewCollections(slugParam) {
+    markNav("collections");
+    var data = await loadPostsIndex();
+    var cols = (await loadCollections()).filter(function (c) {
+      return (c.posts || []).some(function (s) {
+        return data.posts.some(function (p) { return p.slug === s; });
+      });
+    });
+    if (!cols.length) {
+      showError("還沒有合集");
+      return;
+    }
+    var current = cols.find(function (c) { return c.slug === slugParam; }) || cols[0];
+    setTitle(current.title + " — 合集", current.description);
+
+    var node = el('<div class="collections-page"></div>');
+
+    var body = document.createElement("div");
+    body.className = "collections-body";
+    body.appendChild(
+      el(
+        '<section class="hero">' +
+          '<p class="hero__kicker">Collection</p>' +
+          '<h1 class="hero__title">' + escapeHtml(current.title) + "</h1>" +
+          (current.description
+            ? '<p class="hero__lede">' + escapeHtml(current.description) + "</p>"
+            : "") +
+          "</section>"
+      )
+    );
+    var list = document.createElement("ol");
+    list.className = "collection-list";
+    current.posts.forEach(function (slug) {
+      var p = data.posts.find(function (x) { return x.slug === slug; });
+      if (!p) return; // unpublished entries are skipped silently
+      var li = document.createElement("li");
+      li.className = "collection-item";
+      var a = document.createElement("a");
+      a.className = "collection-item__title";
+      a.href = postHref(p.slug);
+      a.textContent = p.title;
+      li.appendChild(a);
+      if (p.summary) {
+        var sum = document.createElement("p");
+        sum.className = "collection-item__summary";
+        sum.textContent = p.summary;
+        li.appendChild(sum);
+      }
+      var meta = document.createElement("p");
+      meta.className = "collection-item__meta";
+      meta.textContent = fmtDate(p.date);
+      li.appendChild(meta);
+      list.appendChild(li);
+    });
+    body.appendChild(list);
+
+    var menu = el(
+      '<nav class="collections-menu" aria-label="合集選單">' +
+        '<p class="collections-menu__label">合集</p>' +
+        '<ul class="collections-menu__list"></ul>' +
+        "</nav>"
+    );
+    var menuList = menu.querySelector(".collections-menu__list");
+    cols.forEach(function (c) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = "#/collections/" + c.slug;
+      a.textContent = c.title;
+      var count = c.posts.filter(function (s) {
+        return data.posts.some(function (p) { return p.slug === s; });
+      }).length;
+      var countEl = document.createElement("span");
+      countEl.className = "collections-menu__count";
+      countEl.textContent = count;
+      a.appendChild(countEl);
+      if (c.slug === current.slug) a.setAttribute("aria-current", "true");
+      li.appendChild(a);
+      menuList.appendChild(li);
+    });
+
+    node.appendChild(body);
+    node.appendChild(menu);
+    render(node);
+  }
+
   /* ─── Data ────────────────────────────────────────────── */
   async function loadPostsIndex() {
     if (postsIndex) return postsIndex;
@@ -739,6 +835,10 @@
       } else if (hash.startsWith("/tags/")) {
         var tag = decodeURIComponent(hash.slice("/tags/".length));
         await viewTag(tag);
+      } else if (hash === "/collections") {
+        await viewCollections();
+      } else if (hash.startsWith("/collections/")) {
+        await viewCollections(decodeURIComponent(hash.slice("/collections/".length)));
       } else if (hash === "/about") {
         await viewAbout();
       } else if (hash === "/search") {
