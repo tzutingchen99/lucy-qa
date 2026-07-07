@@ -31,7 +31,7 @@ jobs:
 
       - name: Commit regenerated files if changed
         run: |
-          git add feed.xml sitemap.xml posts
+          git add feed.xml sitemap.xml posts search-index.json index.html 404.html
           if git diff --cached --quiet; then
             echo "產出物已是最新，不需 commit。"
           else

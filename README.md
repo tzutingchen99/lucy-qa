@@ -21,12 +21,17 @@ lucy-qa/
 ├── style.css               # 樣式（tokens 跟 lucy-cv 同步）
 ├── theme.js                # light/dark theme toggle
 ├── app.js                  # 客戶端路由 + markdown 渲染
-├── generate-feed.js        # 產生 feed.xml（CI 自動跑）
+├── generate-feed.js        # 產生 feed.xml，含全文（CI 自動跑）
 ├── generate-sitemap.js     # 產生 sitemap.xml（CI 自動跑）
-├── generate-pages.js       # 預渲染文章頁到 posts/{slug}/（CI 自動跑）
-├── posts/                  # 預渲染的文章頁（generate-pages.js 產出，會 commit）
-├── feed.xml                # RSS feed（generate-feed.js 產出）
-├── sitemap.xml             # Sitemap（generate-sitemap.js 產出）
+├── generate-pages.js       # 預渲染文章頁 / 首頁列表 / 404 / 搜尋索引（CI 自動跑）
+├── generate-og.js          # 產生 og/ 分享圖（只能本地跑：npm run og）
+├── posts/                  # 預渲染的文章頁（產出物，會 commit）
+├── og/                     # 分享圖 1200×630（產出物，會 commit）
+├── vendor/                 # marked + Prism（自帶，不用 CDN；新語言要加對應 prism-*.js）
+├── search-index.json       # 全文搜尋索引（產出物）
+├── 404.html                # 自訂 404（產出物）
+├── feed.xml                # RSS feed（產出物）
+├── sitemap.xml             # Sitemap（產出物）
 ├── robots.txt
 ├── content/
 │   ├── posts.json          # 文章 metadata
@@ -52,7 +57,8 @@ lucy-qa/
    }
    ```
 
-3. commit + push。完。
+3. （可選）`npm run og` 產生這篇的專屬分享圖——不跑的話會先用全站圖 fallback
+4. commit + push。完。
 
 push 之後 GitHub Actions 會自動：驗證 `posts.json` ↔ `content/posts/*.md` 一致
 （slug 唯一、日期合法、檔案存在）、重新產生 feed.xml、sitemap.xml 和
@@ -70,6 +76,7 @@ npm install                  # 第一次；裝測試工具（網站本身零 bui
 npm run validate             # 檢查 posts.json 與文章檔案一致
 npm test                     # Playwright 冒煙測試（會自己起 server）
 npm run feed && npm run sitemap && npm run pages   # 手動重生產出物（CI 也會做）
+npm run og                   # 重生分享圖（需要本地瀏覽器，CI 不做）
 ```
 
 ## 草稿 / 發佈

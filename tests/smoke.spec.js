@@ -33,7 +33,8 @@ test("靜態文章頁有 SEO meta（canonical / OG / JSON-LD）", async ({ page 
     "content",
     p.title
   );
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  // BlogPosting + BreadcrumbList
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(2);
 });
 
 test("舊 #/posts/ 連結轉址到真實文章頁", async ({ page }) => {
@@ -52,6 +53,53 @@ test("舊 ?h= 深連結轉址後捲到該段落", async ({ page }) => {
   await page.waitForURL(`**/posts/${p.slug}/*`);
   await expect(page.locator(".prose h2").first()).toBeInViewport();
   expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+});
+
+test("首頁原始 HTML 就有文章連結（爬蟲可見，不靠 JS）", async ({ request }) => {
+  const res = await request.get("/");
+  const html = await res.text();
+  for (const p of posts) {
+    expect(html).toContain(`href="posts/${p.slug}/"`);
+  }
+});
+
+test("靜態文章頁預渲染了系列導航與上下篇", async ({ request }) => {
+  // 挑一篇同 tag ≥2 篇的文章（一定有系列導航）
+  const tagged = posts.find(
+    (p) => p.tag && posts.filter((x) => x.tag === p.tag).length >= 2
+  );
+  test.skip(!tagged, "沒有成系列的文章");
+  const html = await (await request.get(`/posts/${tagged.slug}/`)).text();
+  expect(html).toContain('class="series"');
+  expect(html).toContain('class="post-nav"');
+});
+
+test("靜態文章頁有 og:image", async ({ page }) => {
+  const p = posts[0];
+  await page.goto(`/posts/${p.slug}/`);
+  const img = await page
+    .locator('meta[property="og:image"]')
+    .getAttribute("content");
+  expect(img).toMatch(/\/og\/.+\.png$/);
+});
+
+test("不存在的真實路徑回自訂 404 頁", async ({ page }) => {
+  await page.goto("/posts/no-such-post/");
+  await expect(page.locator(".post__title")).toHaveText("找不到這一頁");
+  // 404 頁上有回首頁與最新文章的連結
+  await expect(page.locator('.prose a[href$="/posts/' + posts[0].slug + '/"]')).toHaveCount(1);
+});
+
+test("全文搜尋：內文片段也搜得到", async ({ page }) => {
+  const index = require("../search-index.json");
+  const entry = index.find((e) => e.text && e.text.length > 80);
+  test.skip(!entry, "沒有夠長的內文");
+  const phrase = entry.text.slice(40, 46); // 內文中段的片段
+  await page.goto("/#/search");
+  await page.locator(".search-input").fill(phrase);
+  await expect(
+    page.locator(".search-results .post-card__title", { hasText: entry.title })
+  ).toHaveCount(1);
 });
 
 test("未知路由顯示 Page not found", async ({ page }) => {

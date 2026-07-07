@@ -27,8 +27,6 @@
     marked.setOptions({
       breaks: false,
       gfm: true,
-      headerIds: true,
-      mangle: false,
     });
   }
 
@@ -176,37 +174,6 @@
     });
   }
 
-  function addRelatedPosts(articleNode, meta, allPosts) {
-    if (!meta.tag) return;
-    var related = allPosts.filter(function (p) {
-      return p.slug !== meta.slug && p.tag === meta.tag;
-    });
-    if (!related.length) return;
-    var section = document.createElement("div");
-    section.className = "related";
-    var label = document.createElement("p");
-    label.className = "related__label";
-    label.textContent = "同系列";
-    section.appendChild(label);
-    var ul = document.createElement("ul");
-    ul.className = "related__list";
-    related.slice(0, 3).forEach(function (p) {
-      var li = document.createElement("li");
-      li.className = "related__item";
-      var a = document.createElement("a");
-      a.href = postHref(p.slug);
-      a.textContent = p.title;
-      var dateSpan = document.createElement("span");
-      dateSpan.className = "related__date";
-      dateSpan.textContent = fmtDate(p.date);
-      li.appendChild(a);
-      li.appendChild(dateSpan);
-      ul.appendChild(li);
-    });
-    section.appendChild(ul);
-    articleNode.appendChild(section);
-  }
-
   function processCallouts(proseEl) {
     proseEl.querySelectorAll("blockquote").forEach(function (bq) {
       var firstP = bq.querySelector("p");
@@ -260,6 +227,11 @@
         text.textContent = "已按讚";
         btn.setAttribute("aria-pressed", "true");
         btn.setAttribute("aria-label", "已按讚");
+        // Real like counts live in GoatCounter as events (localStorage is
+        // per-browser UI state only). Unlikes aren't decremented.
+        if (window.goatcounter && window.goatcounter.count) {
+          window.goatcounter.count({ path: "like-" + slug, title: "Like: " + slug, event: true });
+        }
       }
       localStorage.setItem(KEY, JSON.stringify(current));
     });
@@ -404,11 +376,24 @@
     markNav("search");
     setTitle("搜尋");
     var data = await loadPostsIndex();
+    // Full-text index (built by generate-pages.js); fall back to metadata-only
+    // search if it can't be fetched.
+    var fullText = {};
+    try {
+      var idxRes = await fetch(ROOT + "search-index.json", { cache: "no-cache" });
+      if (idxRes.ok) {
+        (await idxRes.json()).forEach(function (entry) {
+          fullText[entry.slug] = (entry.text || "").toLowerCase();
+        });
+      }
+    } catch (err) {
+      /* metadata-only fallback */
+    }
     var node = el('<div class="search-page"></div>');
     var input = document.createElement("input");
     input.type = "search";
     input.className = "search-input";
-    input.placeholder = "搜尋文章 — 標題、摘要、標籤…";
+    input.placeholder = "搜尋文章 — 標題、內文、標籤…";
     input.setAttribute("aria-label", "搜尋文章");
     node.appendChild(input);
     var results = document.createElement("div");
@@ -422,7 +407,8 @@
             return (
               (p.title && p.title.toLowerCase().includes(q2)) ||
               (p.summary && p.summary.toLowerCase().includes(q2)) ||
-              (p.tag && p.tag.toLowerCase().includes(q2))
+              (p.tag && p.tag.toLowerCase().includes(q2)) ||
+              (fullText[p.slug] && fullText[p.slug].includes(q2))
             );
           })
         : data.posts;
@@ -666,7 +652,9 @@
       data.posts.find(function (p) {
         return p.slug === STATIC_SLUG;
       });
-    if (meta) {
+    // Series nav and prev/next are pre-rendered by generate-pages.js;
+    // only build them here if the static page somehow lacks them.
+    if (meta && !article.querySelector(".series")) {
       var seriesNav = buildSeriesNav(meta, data.posts);
       if (seriesNav) article.insertBefore(seriesNav, proseEl);
     }
@@ -675,10 +663,15 @@
     addHeadingAnchors(proseEl);
     addCopyButtons(proseEl);
     if (window.Prism) Prism.highlightAllUnder(proseEl);
-    addLikeButton(article, STATIC_SLUG);
-    addAuthorBio(article);
-    addNewsletterBanner(article);
-    if (meta) addPrevNext(article, meta, data.posts);
+    // Like / bio / CTA belong between the prose and the pre-rendered post-nav.
+    var postNav = article.querySelector(".post-nav");
+    var tail = document.createElement("div");
+    if (postNav) article.insertBefore(tail, postNav);
+    else article.appendChild(tail);
+    addLikeButton(tail, STATIC_SLUG);
+    addAuthorBio(tail);
+    addNewsletterBanner(tail);
+    if (meta && !postNav) addPrevNext(article, meta, data.posts);
     fetchViewCounts();
   }
 
@@ -865,10 +858,6 @@
   window.addEventListener("scroll", updateScroll, { passive: true });
 
   document.addEventListener("DOMContentLoaded", function () {
-    if (window.Prism && Prism.plugins && Prism.plugins.autoloader) {
-      Prism.plugins.autoloader.languages_path =
-        "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";
-    }
     if (STATIC_SLUG) {
       enhanceStaticPost();
     } else {

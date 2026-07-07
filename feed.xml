@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>QA 筆記</title>
     <link>https://tzutingchen99.github.io/lucy-qa/</link>
@@ -13,6 +13,69 @@
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/common-terms</guid>
     <pubDate>Fri, 03 Jul 2026 16:00:00 GMT</pubDate>
     <description>Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。</description>
+    <content:encoded><![CDATA[<h1>Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</h1>
+<h2>術語用爛了的問題</h2>
+<p>有些詞在 QA 圈被說得太多，反而失去了精度。</p>
+<p>「這個測試 flaky」、「Coverage 不夠」、「Regression 要跑一下」——大家都在說，但說的是同一件事嗎？不一定。</p>
+<p>這篇不是要給你背定義，是分享一下我自己遇到這些詞的時候，會怎麼去理解它。</p>
+<hr>
+<h2>Regression Test（回歸測試）</h2>
+<p><strong>Regression Test 不是「再跑一次所有測試」。</strong></p>
+<p>它的核心意義是：確保上次通過的東西，這次改動之後還是通過的。重點在「保護已知正確的狀態」。你每次改了什麼，就有可能影響到其他地方——Regression Test 是偵測這種影響的機制。</p>
+<p>聽到「要跑 Regression」的時候，我自己習慣問：</p>
+<ul>
+<li>跑哪些案例？根據是什麼？</li>
+<li>跑的範圍跟這次改動的影響範圍有對應到嗎？</li>
+</ul>
+<p>如果答案是「全部都跑一遍」，那多半不是有策略的 Regression，而是沒有方向的全量測試。</p>
+<hr>
+<h2>Flaky Test（不穩定測試）</h2>
+<p><strong>Flaky Test 的定義</strong>：同一段 code 沒有改變，測試有時通過、有時失敗。</p>
+<p>來源通常是：</p>
+<ul>
+<li>時序問題（非同步操作、wait 設得不夠）</li>
+<li>測試之間有依賴（前一個 test 的狀態影響後一個）</li>
+<li>環境問題（測試資料不隔離、外部服務不穩定）</li>
+<li>隨機性（Math.random()、時間相關邏輯）</li>
+</ul>
+<p>Flaky Test 真正的問題不是它失敗，是它讓你無法相信測試結果。</p>
+<p>當 CI 噴紅，你第一個反應是「重跑一下看看」——這個直覺就是 Flaky Test 帶來的副作用。你開始不把紅燈當一回事，真正的 bug 就可能在這裡溜走。</p>
+<p>面對 Flaky Test，我覺得先值得問的是<strong>它值不值得被修</strong>：核心流程的關鍵驗證，值得花時間根治；邊緣功能的低價值測試，考慮直接刪掉，不是一直重跑。</p>
+<hr>
+<h2>Coverage（覆蓋率）</h2>
+<p>Coverage 有三種，概念不一樣：</p>
+<p><strong>Line Coverage（行覆蓋率）</strong>：有幾行 code 被執行到。最常用，但也最容易被誤解。</p>
+<p><strong>Branch Coverage（分支覆蓋率）</strong>：每個 if/else 的兩個方向都有跑到嗎？比 Line 更嚴格。</p>
+<p><strong>Statement Coverage（語句覆蓋率）</strong>：每個語句都執行過嗎？跟 Line 相近，但在一行多個語句時有差。</p>
+<p><strong>為什麼 Coverage 90% 不代表沒事</strong>：</p>
+<p>Coverage 量的是「哪些 code 有被執行到」，不是「有沒有驗正確的行為」。</p>
+<pre><code class="language-python">def divide(a, b):
+    return a / b
+
+def test_divide():
+    result = divide(10, 2)
+    # 沒有 assert
+</code></pre>
+<p>這個測試讓 <code>divide</code> 函式的 Coverage 是 100%，但它沒有驗任何東西。</p>
+<p>Coverage 當 KPI 的問題是：它讓人往「把 code 跑到」的方向努力，而不是「驗正確的事」。我比較傾向把 Coverage 當成找「完全沒有被測到的區域」的工具，而不是追一個數字。</p>
+<hr>
+<h2>Test Debt（測試債）</h2>
+<p>技術債（Technical Debt）大家都聽過——為了趕快做出功能，犧牲了程式品質，之後要花更多時間「還債」（重構、修 bug）。Test Debt 是同樣的邏輯套用在測試上：你現在選擇不寫測試、或寫了不夠完整的測試，這些「虧欠」不會消失，之後遲早要回來還。</p>
+<p>常見的形式：</p>
+<ul>
+<li>功能上線但測試沒補</li>
+<li>測試是假的（assert 永遠是 True）</li>
+<li>Flaky Test 沒修，靠「重跑」撐著</li>
+<li>測試案例跟功能脫節，改了功能但沒更新測試</li>
+</ul>
+<p>Test Debt 難察覺的原因是它不像 bug 會立刻報錯，它在系統某個地方慢慢累積，直到某次改動讓它爆出來。</p>
+<p>幾個辨認的問題：有沒有人不敢改某段 code，因為不知道會不會壞東西？每次大改動，QA 都要手動驗很多東西，因為自動化跟不上？Flaky Test 的數量一直增加，但沒有人在修？</p>
+<hr>
+<h2>一個結論</h2>
+<blockquote>
+<p><strong>這些詞被說爛了的代價是：大家說的是同一個詞，但指的不是同一件事。多問一句「你說的 X 是指什麼」，通常會有驚喜。</strong></p>
+</blockquote>
+]]></content:encoded>
   </item>
   <item>
     <title>Bug Report 的最小單位是什麼</title>
@@ -20,6 +83,48 @@
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-report-minimum-unit</guid>
     <pubDate>Fri, 03 Jul 2026 16:00:00 GMT</pubDate>
     <description>收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。</description>
+    <content:encoded><![CDATA[<h1>Bug Report 的最小單位是什麼</h1>
+<h2>為什麼很多 bug report 沒辦法被用</h2>
+<p>收到一個 bug report 說「這個壞掉了」——然後呢？</p>
+<p>RD 不知道怎麼重現，QA 不知道要驗什麼，PM 不知道這是不是他說的那個問題。這個 bug 在系統裡掛著，沒人動，因為沒人知道從哪裡開始。</p>
+<p>問題不是懶，是那個 bug report 本來就缺了一個東西：<strong>可以被重現的步驟</strong>。</p>
+<hr>
+<h2>可重現，是第一條</h2>
+<p>一個 bug report 最小要包含的東西，只有一個：讓別人能重現這個問題的足夠資訊。</p>
+<p>不是描述症狀，是給重現路徑。</p>
+<p><strong>症狀</strong>：「購物車沒辦法結帳」</p>
+<p><strong>重現路徑</strong>：</p>
+<ol>
+<li>登入帳號 A（測試帳號資訊附上）</li>
+<li>加入商品 X 到購物車</li>
+<li>點擊結帳</li>
+<li>在付款方式選「信用卡」</li>
+<li>點擊「確認付款」</li>
+<li>出現 500 錯誤，訂單未建立</li>
+</ol>
+<p>這兩個描述說的是同一件事，但只有第二個讓 RD 可以直接動手。</p>
+<hr>
+<h2>「最小」不代表「最少字」</h2>
+<p>最小單位不是字數最少，是讓問題能被重現的<strong>最小資訊集合</strong>。</p>
+<p>有時候這需要很多字，因為重現條件很特定：</p>
+<ul>
+<li>特定帳號、特定權限</li>
+<li>特定瀏覽器版本</li>
+<li>特定時間點（例如跨日的邊界）</li>
+<li>特定資料狀態（例如購物車裡有某種組合的商品）</li>
+</ul>
+<p>把這些都寫進去，不是囉嗦，是讓 bug 可以被解決的必要條件。</p>
+<hr>
+<h2>預期行為，是容易被忘的那個</h2>
+<p>除了重現步驟，還有一個常被省略的欄位：<strong>預期結果是什麼</strong>。</p>
+<p>有些 bug 看起來「很明顯」，所以沒人覺得需要寫預期。但「明顯」是主觀的——QA 覺得明顯，RD 不一定，PM 更不一定。</p>
+<p>特別是當「壞掉的行為」跟「舊有行為」有點像的時候，預期結果說清楚，就是讓三方不用再開一次會對齊的方式。</p>
+<hr>
+<h2>一個結論</h2>
+<blockquote>
+<p><strong>Bug report 的最小單位不是一句話，是一條可重現的路徑 + 預期結果。少了這兩個，它不是 bug report，是問題描述。</strong></p>
+</blockquote>
+]]></content:encoded>
   </item>
   <item>
     <title>測試文件與流程</title>
@@ -27,6 +132,59 @@
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</guid>
     <pubDate>Sat, 27 Jun 2026 16:00:00 GMT</pubDate>
     <description>Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。</description>
+    <content:encoded><![CDATA[<h1>測試文件與流程</h1>
+<h2>文件的問題不是「要不要寫」</h2>
+<p>很多團隊在這個問題上卡在錯的地方：「測試文件要寫多詳細？」</p>
+<p>比這個更值得想的問題是：<strong>這份文件是寫給誰看的，為了讓什麼事情不要出錯？</strong></p>
+<p>文件不是為了合規、不是為了讓上面的人看到你有在做事。它是讓 QA、RD、PM 不用每次都從頭溝通同一件事的工具——這是我自己比較接受的定義。</p>
+<hr>
+<h2>Test Plan（測試計畫）</h2>
+<p>Test Plan 主要回答三個問題：</p>
+<ol>
+<li><strong>測什麼</strong> — 這個版本的範圍是什麼，哪些功能、哪些流程</li>
+<li><strong>不測什麼</strong> — 明確說出排除在外的部分，以及為什麼</li>
+<li><strong>怎麼測</strong> — 用什麼方法、什麼環境、什麼工具</li>
+</ol>
+<p>「不測什麼」這一項很多人會跳過，但沒有說清楚範圍，所有人對「測完了」這件事的理解就會不一樣。</p>
+<p>Test Plan 不需要很長，讓人讀完之後知道「這次測試的邊界在哪裡」就夠了。</p>
+<hr>
+<h2>Test Suite vs Test Case</h2>
+<p><strong>Test Case（測試案例）</strong>：一個具體的驗證單位。有前置條件、步驟、預期結果。</p>
+<p><strong>Test Suite（測試套件）</strong>：一組 Test Case 的集合，通常按功能或目的分組。</p>
+<p>例如「結帳功能 Test Suite」裡包含：正常結帳流程、折扣碼套用、庫存不足時的行為、付款失敗的處理。</p>
+<p>Test Suite 是組織的工具，讓你知道「跑完這批代表什麼程度的驗證做完了」。</p>
+<hr>
+<h2>Test Charter（測試任務書）</h2>
+<p>這個詞在探索性測試裡會看到。</p>
+<p><strong>探索性測試</strong>不是隨便亂點，是有目的的自由探索。Test Charter 是這個探索的任務書：</p>
+<pre><code>目標（Target）：購物車功能
+目的（Purpose）：找出在邊界條件下可能的異常行為
+時間限制：60 分鐘
+</code></pre>
+<p>Charter 不規定你怎麼測，但給你一個框架，讓探索有方向、事後也能說清楚你測了什麼、發現了什麼。</p>
+<hr>
+<h2>Acceptance Criteria（驗收條件）</h2>
+<p>理想的狀態是 PM、RD、QA 一起定，在開發開始之前。</p>
+<p>好的 Acceptance Criteria 是可以被「驗」的，不是可以被「詮釋」的。</p>
+<p>不太好的寫法：「結帳流程要流暢」</p>
+<p>比較具體的寫法：「使用者從購物車點擊結帳，到看到訂單確認頁面，步驟不超過三步，且在正常網路條件下完成時間不超過三秒」</p>
+<p>Acceptance Criteria 定好了，測試案例才有依據。QA 是在「驗 Acceptance Criteria 有沒有被滿足」，而不是「自己猜功能應該長什麼樣子」。</p>
+<hr>
+<h2>DoD：Definition of Done</h2>
+<p><strong>DoD = 什麼叫做「這個功能完成了」</strong></p>
+<p>DoD 是團隊共識，不是某一個人說了算。通常包含：功能實作完成、單元測試寫完且通過、Code review 完成、QA 測試通過、文件更新、Deploy 到測試環境。</p>
+<p>沒有明確 DoD 的情況，每個人對「完成」的定義不同，很容易出現「我這邊是好的」但測起來還是有問題的情況。</p>
+<hr>
+<h2>DoR：Definition of Ready</h2>
+<p><strong>DoR = 什麼叫做「這個需求可以開始做了」</strong></p>
+<p>DoR 是讓問題在最早的階段被發現的機制。如果一個需求在開始開發之前連驗收條件都還沒定好，QA 最後收到的通常是一個沒辦法被清楚驗收的功能。</p>
+<p>DoR 通常包含：需求描述清楚沒有歧義、Acceptance Criteria 已定義、設計稿確認（如果有的話）、依賴的功能或 API 已確認。</p>
+<hr>
+<h2>一個結論</h2>
+<blockquote>
+<p><strong>DoD 跟 DoR 聽起來像是流程文件，但它們真正在做的事只有一件：讓三方說的「完成」指的是同一件事。</strong></p>
+</blockquote>
+]]></content:encoded>
   </item>
   <item>
     <title>Bug 的語言</title>
@@ -34,6 +192,90 @@
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-language</guid>
     <pubDate>Tue, 23 Jun 2026 16:00:00 GMT</pubDate>
     <description>Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。</description>
+    <content:encoded><![CDATA[<h1>Bug 的語言</h1>
+<h2>一個開會場景</h2>
+<p>「這個 bug 很嚴重，要馬上修。」</p>
+<p>「等一下，你說的嚴重是指影響範圍大，還是說你覺得要排在這週？」</p>
+<p>沉默三秒。</p>
+<p>這不是在刁難，是因為「嚴重」這個詞在測試圈裡有兩個意思，很多人混著用。混著用的結果是：RD 以為是在說重要性，QA 說的其實是影響程度，PM 聽成是時間壓力——同一句話，三個人理解不同，會議結束了事情還沒對齊。</p>
+<p>術語存在的原因，就是讓這種對話不用每次都重新解釋。</p>
+<hr>
+<h2>Bug vs Defect vs Issue vs Incident</h2>
+<p>這四個詞常被當同義詞用，但不同公司、不同場合選用哪個詞其實有差。</p>
+<p><strong>Bug</strong>
+最日常的說法。通常指「程式行為跟預期不符」，不分大小。口語中最常用，但也最模糊。</p>
+<p><strong>Defect</strong>
+比 Bug 正式一點。強調「產品有瑕疵」，是可以量化、追蹤的東西。進 ticket 系統、寫報告的時候通常會看到這個詞。</p>
+<p><strong>Issue</strong>
+更廣。不一定是程式出錯，可能是需求不清、環境問題、設計不符使用者期待。很多團隊用 Issue 包含所有「需要處理的事」，Bug 只是 Issue 的子集。</p>
+<p><strong>Incident</strong>
+通常是 production 出事了。影響到真實使用者、有時間壓力、需要 post-mortem。Incident 不一定是 Bug 造成的——可能是設定錯誤、流量異常、外部依賴掛了。</p>
+<table>
+<thead>
+<tr>
+<th>詞</th>
+<th>場合</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bug</td>
+<td>日常溝通，測試中發現的問題</td>
+</tr>
+<tr>
+<td>Defect</td>
+<td>正式報告、追蹤系統、交付品質討論</td>
+</tr>
+<tr>
+<td>Issue</td>
+<td>廣義的「待處理事項」，不限於程式錯誤</td>
+</tr>
+<tr>
+<td>Incident</td>
+<td>Production 事故，有時效性，需要應變</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Severity vs Priority</h2>
+<p>這組最常搞混，也最常造成排程爭議。</p>
+<p><strong>Severity（嚴重度）</strong>
+這個問題的<strong>技術影響程度</strong>。跟多少使用者受影響、功能有多核心有關。</p>
+<ul>
+<li>Critical — 系統掛了、資料遺失、無法繞過</li>
+<li>High — 主要功能無法使用，沒有 workaround</li>
+<li>Medium — 功能受損，但可以繞過</li>
+<li>Low — 小問題，不影響主要流程</li>
+</ul>
+<p><strong>Priority（優先度）</strong>
+這個問題<strong>應該什麼時候被處理</strong>。跟商業判斷、時程、資源有關。</p>
+<p>Severity Low 的 bug 可以有 Priority High——例如登入頁的 logo 跑版，技術上沒什麼影響，但明天有大客戶 demo。</p>
+<p>Severity Critical 的 bug 也可能暫時是 Priority Low——例如在幾乎沒人用的舊版功能上發現的崩潰，已確認下季要砍掉。</p>
+<p><strong>Severity 是 QA 定的，Priority 是團隊一起決定的。</strong> 把這兩件事混在一起，排程就會充滿主觀。</p>
+<hr>
+<h2>Root Cause vs Symptom</h2>
+<p>大多數 bug report 只寫到 symptom。</p>
+<p>Symptom 是你<strong>看到</strong>的現象：「點擊送出按鈕沒有反應。」</p>
+<p>Root Cause 是<strong>為什麼</strong>：「API 在處理空字串時沒有回傳錯誤，前端 handler 收到 undefined 就靜默失敗。」</p>
+<p>只寫 symptom 的 bug report，RD 拿到之後還要自己找 root cause。有時候找到的是錯的地方，修了一個不相關的東西，symptom 消失了，問題還在。</p>
+<p>你不一定每次都能找到 root cause，但可以寫清楚：</p>
+<ul>
+<li>發生了什麼（symptom）</li>
+<li>什麼條件下發生（steps to reproduce）</li>
+<li>你懷疑的原因（有的話寫，沒有不用硬湊）</li>
+<li>不發生的條件（如果有的話）</li>
+</ul>
+<p>能 reproduce，就是好 bug report 的第一條。其他都是裝飾。</p>
+<hr>
+<h2>Regression Bug</h2>
+<p>修了舊問題，壞了新東西——這叫 regression。</p>
+<p>特別麻煩的原因是它通常<strong>不在你預期的地方出現</strong>。你修了金流，登入掛了。你改了 API response 格式，三個下游服務靜默失敗。</p>
+<p>找到 regression 的時候，除了修，我覺得值得問一下：<strong>為什麼這條測試沒有在它被破壞的時候擋下來？</strong></p>
+<p>通常答案是耦合太緊，或是測試的覆蓋跟真實的依賴關係脫節了。</p>
+<hr>
+<h2>一個結論</h2>
+<blockquote>
+<p><strong>用對詞，才能讓對的人做對的事。Bug 的語言不是在咬文嚼字，是讓溝通少損耗一點。</strong></p>
+</blockquote>
+]]></content:encoded>
   </item>
   <item>
     <title>驗意圖，不要驗實作</title>
@@ -41,6 +283,79 @@
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/intent-vs-implementation</guid>
     <pubDate>Sun, 21 Jun 2026 16:00:00 GMT</pubDate>
     <description>重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。</description>
+    <content:encoded><![CDATA[<h1>驗意圖，不要驗實作</h1>
+<h2>一個小場景</h2>
+<p>你花了一個下午重構一段邏輯。沒改 API、沒改回傳、行為一模一樣，只是把幾個 if-else 收進一個函式。跑測試——50 個紅了。</p>
+<p>仔細看才發現：那些測試在斷言「<code>_calculate_discount</code> 有被呼叫」、「內部走了第二條 path」、「mock 的 SQL 字串長這樣」。</p>
+<p>功能沒壞，但測試說壞了。<strong>這種測試在驗「你怎麼寫的」，不是「你要做的事」。</strong></p>
+<h2>一個比喻</h2>
+<p>你叫外送。你在乎的是：<strong>東西有沒有送到、品項對不對、溫度可不可以</strong>。這就是「意圖」。</p>
+<p>你不在乎：<strong>騎手騎哪條路、用哪個包包、停哪個紅綠燈</strong>。這些是「實作」。</p>
+<p>好的驗收，是檢查送到的東西。壞的驗收，是裝 GPS 跟騎手吵說「你為什麼不走我期待的那條路」——他換了條更快的路你還氣他。</p>
+<p><strong>意圖 = 對外承諾的契約</strong>（行為、結果、狀態）
+<strong>實作 = 為了做到那個承諾，內部選用的資料結構、函式、SQL、第三方 lib</strong></p>
+<p>換句話說：意圖紅了，是真的有 bug；實作紅了，多半只是有人換了條更快的路。</p>
+<h2>一個對照例</h2>
+<p>假設要驗「VIP3 客戶下 100 USDT 的單，手續費應該是 0.05」。</p>
+<p><strong>驗實作（不好）</strong></p>
+<pre><code class="language-python">def test_calculate_fee():
+    calc = FeeCalculator(tier=&quot;VIP3&quot;)
+    calc.calculate(100)
+    assert calc._apply_vip_discount.called      # 偷看內部
+    assert calc._round_to_8_decimals.called     # 偷看內部
+</code></pre>
+<p>之後你把 VIP 折扣改成查表、把 rounding 內聯掉——測試紅，但結果完全正確。</p>
+<p><strong>驗意圖（好）</strong></p>
+<pre><code class="language-python">def test_calculate_fee():
+    fee = FeeCalculator(tier=&quot;VIP3&quot;).calculate(notional=100)
+    assert fee == Decimal(&quot;0.05000000&quot;)
+</code></pre>
+<p>你只在乎結果。內部怎麼算的，<strong>不關測試的事</strong>。</p>
+<h2>兩個快速判斷句</h2>
+<p>寫 assert 之前先問自己兩個問題：</p>
+<ol>
+<li><strong>如果換一個合理的實作方式，這個斷言會不會打破？</strong> 會 → 你在驗實作。</li>
+<li><strong>使用者只看 API 文件的話，會在意這件事嗎？</strong> 不會 → 你在驗實作。</li>
+</ol>
+<p>兩題只要有一題答「是」，就把那個 assert 改成「對結果的斷言」。</p>
+<h2>例外：什麼時候可以驗實作</h2>
+<p>不是所有實作細節都不能驗。三種情況例外，但要意識到自己在做例外：</p>
+<ul>
+<li><strong>實作本身就是契約</strong>——例如「這個 API 必須冪等」、「失敗一定要寫 audit log」。這些不是細節，是承諾。</li>
+<li><strong>回歸測試固化已知 bug</strong>——例如某次 race condition 修好後，明確驗「順序是 lock → cancel」。「順序」就是修復的本體。</li>
+<li><strong>安全 / 合規邊界</strong>——例如「不能 log 完整卡號」、「session token 不能寫 localStorage」。這類負向斷言必須驗內部，因為違反就是事故。</li>
+</ul>
+<h2>實務上怎麼套用</h2>
+<table>
+<thead>
+<tr>
+<th>場景</th>
+<th>怎麼做</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Robot Framework keyword 設計</td>
+<td>keyword 名字用「使用者語言」(<code>下單</code>)，不要用「內部函式名」(<code>Call Matching Engine</code>)</td>
+</tr>
+<tr>
+<td>撮合引擎測試</td>
+<td>驗「成交價、剩餘量、撮合方向」，不要驗「內部走了哪個 priority queue」</td>
+</tr>
+<tr>
+<td>API 自動化</td>
+<td>assert response body / status / DB 終態，不要 mock 中間步驟然後 assert mock 被呼叫</td>
+</tr>
+<tr>
+<td>Spec review</td>
+<td>看到 spec 寫「X 元件會呼叫 Y service 三次」就提出來 — 這是實作細節，不該入 spec</td>
+</tr>
+</tbody></table>
+<h2>一個結論</h2>
+<blockquote>
+<p><strong>重構之後測試應該全綠。如果不是綠的，要嘛功能真的壞了，要嘛你的測試在驗錯的東西。</strong></p>
+</blockquote>
+<p>紅得有意義是品質訊號，紅得是雜訊就是測試債。</p>
+]]></content:encoded>
   </item>
   <item>
     <title>一個放散落東西的地方</title>
@@ -48,6 +363,61 @@
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/hello</guid>
     <pubDate>Sat, 20 Jun 2026 16:00:00 GMT</pubDate>
     <description>為什麼開這個站，以及接下來會在這裡寫什麼。</description>
+    <content:encoded><![CDATA[<blockquote>
+<p>大部分的學習，其實不是在「寫程式」的時候發生的，是在「跟人解釋程式」的時候發生的。</p>
+</blockquote>
+<p>開這個站，其實就是為了這件事。</p>
+<p>很多事情我以為自己理解了，等到要寫出來才發現根本沒想清楚。所以這裡對我來說，比較像是 <strong>自己整理思緒的地方</strong>，順便把整理好的東西放出來。有人剛好看到、覺得有用，是 bonus。</p>
+<h2>已寫的</h2>
+<p><strong>術語 / 概念</strong></p>
+<ul>
+<li><a href="#/posts/bug-language">Bug 的語言</a> — Bug、Defect、Severity、Priority，這些詞說的不一定是同一件事。</li>
+<li><a href="#/posts/test-docs">測試文件與流程</a> — Test Plan、DoD、Acceptance Criteria 是什麼、怎麼用。</li>
+<li><a href="#/posts/common-terms">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a> — 被說爛的詞，重新說清楚。</li>
+</ul>
+<p><strong>原則</strong></p>
+<ul>
+<li><a href="#/posts/intent-vs-implementation">驗意圖，不要驗實作</a> — 重構後測試全紅但沒 bug，問題在哪。</li>
+</ul>
+<p><strong>Bug Report</strong></p>
+<ul>
+<li><a href="#/posts/bug-report-minimum-unit">Bug Report 的最小單位是什麼</a> — 收到「這個壞掉了」之後，缺的是什麼。</li>
+</ul>
+<h2>還在排隊的</h2>
+<p><strong>自動化</strong></p>
+<ul>
+<li><strong>Pabot 平行化的坑</strong></li>
+<li><strong>keyword 設計</strong> — 命名用使用者語言，不要用內部函式名。</li>
+<li><strong>Page Object 什麼時候是負債</strong> — 抽象搭錯方向的代價，比沒抽象還貴。</li>
+</ul>
+<p><strong>效能</strong></p>
+<ul>
+<li><strong>k6 跟 Locust</strong></li>
+<li><strong>壓得很慘 vs 找到真實瓶頸</strong></li>
+</ul>
+<p><strong>AI 在 QA 流程裡</strong></p>
+<ul>
+<li><strong>Claude Code 進 QA workflow</strong> — 哪些事適合丟給它、哪些丟了你會後悔。</li>
+<li><strong>MCP 串內部系統</strong> — 一個 server 解掉多少手工流程的真實數字。</li>
+<li><strong>AI 做 spec review</strong> — 可以接到什麼程度，又會在哪裡掉鏈子。</li>
+</ul>
+<p><strong>原則</strong></p>
+<ul>
+<li><strong>測試金字塔在 2026 年還成立嗎</strong> — 經典模型遇到 AI / serverless / 微服務的拉扯。</li>
+</ul>
+<p><strong>Spec / 流程</strong></p>
+<ul>
+<li><strong>Spec review 該抓什麼、放過什麼</strong> — 一個 QA 在 spec review 的攻防取捨。</li>
+<li><strong>跟 PM / RD 對齊驗收條件</strong> — 不是把驗收條件寫死，而是讓三方語言一致。</li>
+</ul>
+<h2>寫法</h2>
+<ul>
+<li>短文為主，事情寫清楚就好，不灌水。</li>
+<li>程式碼用真實情境，不會貼一段沒有 context 的 snippet。</li>
+<li>想到什麼就寫什麼，不會按進度表。</li>
+</ul>
+<p>如果你也是做 QA 的，或正在猶豫要不要走這條路，歡迎來 <a href="https://www.threads.com/@qauluru">Threads</a> 找我聊。</p>
+]]></content:encoded>
   </item>
   </channel>
 </rss>

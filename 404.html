@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — QA 筆記</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/png" href="/lucy-qa/letter-q.png" />
+    <link rel="stylesheet" href="/lucy-qa/style.css" />
+    <script>
+      (function () {
+        var saved = localStorage.getItem("qa-theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme =
+          saved === "dark" || saved === "light" ? saved : prefersDark ? "dark" : "light";
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="grid">
+      <header class="strip" role="banner">
+        <a href="/lucy-qa/" class="strip__item strip__brand">QA / Lucy</a>
+      </header>
+      <main class="main">
+        <section class="post">
+          <p class="post__meta">404</p>
+          <h1 class="post__title">找不到這一頁</h1>
+          <div class="prose">
+            <p>網址可能打錯了，或這篇文章已經搬家。</p>
+            <p><a href="/lucy-qa/">← 回首頁</a></p>
+            <h2>最新文章</h2>
+            <ul>
+              <li><a href="/lucy-qa/posts/common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li>
+              <li><a href="/lucy-qa/posts/bug-report-minimum-unit/">Bug Report 的最小單位是什麼</a></li>
+              <li><a href="/lucy-qa/posts/test-docs/">測試文件與流程</a></li>
+            </ul>
+          </div>
+        </section>
+      </main>
+      <footer class="strip strip--foot" role="contentinfo">
+        <span class="strip__item">QA / Lucy</span>
+        <span class="strip__item strip__item--end">2026</span>
+      </footer>
+    </div>
+  </body>
+</html>

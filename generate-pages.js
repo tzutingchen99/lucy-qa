@@ -62,10 +62,51 @@ const posts = JSON.parse(fs.readFileSync("content/posts.json", "utf8"))
   .posts.filter((p) => p.status === "published")
   .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
+// Static series nav — same markup buildSeriesNav() makes in app.js, but
+// crawler-visible. app.js skips rebuilding it when it's already in the DOM.
+function seriesNavHtml(p) {
+  if (!p.tag) return "";
+  const series = posts
+    .filter((x) => x.tag === p.tag)
+    .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+  if (series.length < 2) return "";
+  const idx = series.findIndex((x) => x.slug === p.slug);
+  const items = series
+    .map((x, i) =>
+      x.slug === p.slug
+        ? `<li class="series__item series__item--current"><span class="series__num">${i + 1}.</span><span>${esc(x.title)}</span></li>`
+        : `<li class="series__item"><span class="series__num">${i + 1}.</span><a href="../${esc(x.slug)}/">${esc(x.title)}</a></li>`
+    )
+    .join("");
+  return `<nav class="series" aria-label="${esc(p.tag)} 系列"><p class="series__label">${esc(p.tag)} 系列  ${idx + 1} / ${series.length}</p><ul class="series__list">${items}</ul></nav>`;
+}
+
+// Static prev/next — same markup addPrevNext() makes in app.js.
+function prevNextHtml(p) {
+  const idx = posts.findIndex((x) => x.slug === p.slug);
+  const newer = posts[idx - 1];
+  const older = posts[idx + 1];
+  if (!newer && !older) return "";
+  const prev = older
+    ? `<div class="post-nav__item post-nav__item--prev"><span class="post-nav__dir">← 上一篇</span><a href="../${esc(older.slug)}/" class="post-nav__title">${esc(older.title)}</a></div>`
+    : "";
+  const next = newer
+    ? `<div class="post-nav__item post-nav__item--next"><span class="post-nav__dir">下一篇 →</span><a href="../${esc(newer.slug)}/" class="post-nav__title">${esc(newer.title)}</a></div>`
+    : "";
+  return `<nav class="post-nav" aria-label="文章導航">${prev}${next}</nav>`;
+}
+
+function ogImagePath(slug) {
+  if (fs.existsSync(path.join("og", slug + ".png"))) return `${SITE_URL}/og/${slug}.png`;
+  if (fs.existsSync(path.join("og", "site.png"))) return `${SITE_URL}/og/site.png`;
+  return null;
+}
+
 function pageHtml(p, proseHtml, mins) {
   const url = `${SITE_URL}/posts/${p.slug}/`;
   const title = `${p.title} — ${SITE_TITLE}`;
   const desc = p.summary || "";
+  const ogImage = ogImagePath(p.slug);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -76,6 +117,15 @@ function pageHtml(p, proseHtml, mins) {
     dateModified: p.updated || p.date,
     inLanguage: "zh-Hant",
     author: { "@type": "Person", name: "Lucy Chen", url: "https://tzutingchen99.github.io/lucy-cv/" },
+  };
+  if (ogImage) jsonLd.image = ogImage;
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: SITE_TITLE, item: SITE_URL + "/" },
+      { "@type": "ListItem", position: 2, name: p.title },
+    ],
   };
 
   return `<!doctype html>
@@ -92,10 +142,20 @@ function pageHtml(p, proseHtml, mins) {
     <meta property="og:description" content="${esc(desc)}" />
     <meta property="og:url" content="${url}" />
     <meta property="article:published_time" content="${p.date}" />
-${p.updated ? `    <meta property="article:modified_time" content="${p.updated}" />\n` : ""}    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="${esc(p.title)}" />
+${p.updated ? `    <meta property="article:modified_time" content="${p.updated}" />\n` : ""}${
+    ogImage
+      ? `    <meta property="og:image" content="${ogImage}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="${ogImage}" />
+`
+      : `    <meta name="twitter:card" content="summary" />
+`
+  }    <meta name="twitter:title" content="${esc(p.title)}" />
     <meta name="twitter:description" content="${esc(desc)}" />
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
     <link rel="alternate" type="application/rss+xml" title="${esc(SITE_TITLE)} RSS" href="${ROOT}feed.xml" />
     <link rel="icon" type="image/png" href="${ROOT}letter-q.png" />
     <link rel="apple-touch-icon" href="${ROOT}letter-q.png" />
@@ -170,9 +230,11 @@ ${p.updated ? `    <meta property="article:modified_time" content="${p.updated}"
     SITE_PATH + "posts/" + p.slug + "/"
   )}" data-path-legacy="${esc(SITE_PATH + "#/posts/" + p.slug)}"></span></p>
           <h1 class="post__title">${esc(p.title)}</h1>
+          ${seriesNavHtml(p)}
           <div class="prose">
 ${proseHtml}
           </div>
+          ${prevNextHtml(p)}
         </article>
       </main>
 
@@ -195,8 +257,8 @@ ${proseHtml}
 
     <button id="back-to-top" aria-label="回到頂部">↑</button>
     <script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="${ROOT}vendor/prism.min.js"></script>
+    <script src="${ROOT}vendor/prism-python.min.js"></script>
     <script src="${ROOT}theme.js"></script>
     <script src="${ROOT}app.js"></script>
   </body>
@@ -227,3 +289,127 @@ if (fs.existsSync("posts")) {
 }
 
 console.log(`Generated ${count} static post pages under posts/.`);
+
+/* ─── Full-text search index ─────────────────────────────── */
+function mdToText(md) {
+  return md
+    .replace(/^```.*$/gm, " ") // keep code content, drop fence lines
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^#+\s*/gm, "")
+    .replace(/[*_~>|]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const searchIndex = posts.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  date: p.date,
+  tag: p.tag || "",
+  summary: p.summary || "",
+  text: mdToText(fs.readFileSync(path.join("content", "posts", p.slug + ".md"), "utf8")),
+}));
+fs.writeFileSync("search-index.json", JSON.stringify(searchIndex), "utf8");
+console.log(`Generated search-index.json — ${searchIndex.length} posts.`);
+
+/* ─── Pre-rendered home post list ────────────────────────── */
+// Crawlers on the root page previously saw only "Loading…" — no links to any
+// post. Inject the same markup viewHome() renders between the marker comments
+// in index.html; app.js re-renders identical DOM on load.
+function postCardHtml(p) {
+  return `<article class="post-card">
+<div class="post-card__meta">${esc(fmtDate(p.date))}<span class="post-card__views"><span class="goatcounter-count" data-path="${esc(SITE_PATH + "posts/" + p.slug + "/")}" data-path-legacy="${esc(SITE_PATH + "#/posts/" + p.slug)}"></span></span></div>
+<div class="post-card__body">
+<h3 class="post-card__title"><a href="posts/${esc(p.slug)}/">${esc(p.title)}</a></h3>
+${p.summary ? `<p class="post-card__summary">${esc(p.summary)}</p>` : ""}
+${p.tag ? `<button class="post-card__tag" data-tag="${esc(p.tag)}">${esc(p.tag)}</button>` : ""}
+</div>
+</article>`;
+}
+
+const homeHtml = `
+        <div class="home">
+          <section class="hero">
+            <p class="hero__kicker">Notes on QA</p>
+            <h1 class="hero__title">QA 筆記</h1>
+            <p class="hero__lede">關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。</p>
+          </section>
+          <section class="section">
+            <div class="section__head">
+              <h2 class="section__title">All posts</h2>
+              <span class="section__count">${posts.length}</span>
+            </div>
+            <div class="post-list">
+${posts.map(postCardHtml).join("\n")}
+            </div>
+          </section>
+        </div>
+        `;
+
+/* ─── Custom 404 page ────────────────────────────────────── */
+// GitHub Pages serves 404.html from the repo root for any missing path.
+// Absolute (SITE_PATH-prefixed) links because the page renders at any depth.
+const latest = posts.slice(0, 3);
+const notFoundHtml = `<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — ${SITE_TITLE}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/png" href="${SITE_PATH}letter-q.png" />
+    <link rel="stylesheet" href="${SITE_PATH}style.css" />
+    <script>
+      (function () {
+        var saved = localStorage.getItem("qa-theme");
+        var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme =
+          saved === "dark" || saved === "light" ? saved : prefersDark ? "dark" : "light";
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="grid">
+      <header class="strip" role="banner">
+        <a href="${SITE_PATH}" class="strip__item strip__brand">QA / Lucy</a>
+      </header>
+      <main class="main">
+        <section class="post">
+          <p class="post__meta">404</p>
+          <h1 class="post__title">找不到這一頁</h1>
+          <div class="prose">
+            <p>網址可能打錯了，或這篇文章已經搬家。</p>
+            <p><a href="${SITE_PATH}">← 回首頁</a></p>
+            <h2>最新文章</h2>
+            <ul>
+${latest.map((p) => `              <li><a href="${SITE_PATH}posts/${esc(p.slug)}/">${esc(p.title)}</a></li>`).join("\n")}
+            </ul>
+          </div>
+        </section>
+      </main>
+      <footer class="strip strip--foot" role="contentinfo">
+        <span class="strip__item">QA / Lucy</span>
+        <span class="strip__item strip__item--end">2026</span>
+      </footer>
+    </div>
+  </body>
+</html>
+`;
+fs.writeFileSync("404.html", notFoundHtml, "utf8");
+console.log("Generated 404.html.");
+
+const indexHtml = fs.readFileSync("index.html", "utf8");
+const START = "<!-- prerender:start -->";
+const END = "<!-- prerender:end -->";
+if (indexHtml.includes(START) && indexHtml.includes(END)) {
+  const updated =
+    indexHtml.slice(0, indexHtml.indexOf(START) + START.length) +
+    homeHtml +
+    indexHtml.slice(indexHtml.indexOf(END));
+  fs.writeFileSync("index.html", updated, "utf8");
+  console.log("Injected pre-rendered post list into index.html.");
+} else {
+  console.warn("index.html 缺少 prerender 標記，略過首頁預渲染。");
+}

@@ -7,6 +7,7 @@
     "feed": "node generate-feed.js",
     "sitemap": "node generate-sitemap.js",
     "pages": "node generate-pages.js",
+    "og": "node generate-og.js",
     "test": "playwright test"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@
 // Reads content/posts.json and writes feed.xml
 
 const fs = require("fs");
+const { marked } = require("marked");
 
 const SITE_URL = "https://tzutingchen99.github.io/lucy-qa";
 const SITE_TITLE = "QA 筆記";
@@ -27,6 +28,11 @@ const items = posts
     // would make every feed reader re-deliver all items as new.
     const guid = `${SITE_URL}/#/posts/${p.slug}`;
     const pubDate = new Date(p.date + "T00:00:00+08:00").toUTCString();
+    const md = fs.readFileSync(`content/posts/${p.slug}.md`, "utf8");
+    // Full article HTML for feed readers; CDATA so we don't double-escape.
+    const contentHtml = marked
+      .parse(md)
+      .replace(/\]\]>/g, "]]&gt;");
     return [
       "  <item>",
       `    <title>${xmlEscape(p.title)}</title>`,
@@ -34,6 +40,7 @@ const items = posts
       `    <guid isPermaLink="false">${guid}</guid>`,
       `    <pubDate>${pubDate}</pubDate>`,
       p.summary ? `    <description>${xmlEscape(p.summary)}</description>` : "",
+      `    <content:encoded><![CDATA[${contentHtml}]]></content:encoded>`,
       "  </item>",
     ]
       .filter(Boolean)
@@ -47,7 +54,7 @@ const lastBuild =
     : new Date().toUTCString();
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>${xmlEscape(SITE_TITLE)}</title>
     <link>${SITE_URL}/</link>

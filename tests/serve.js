@@ -31,8 +31,15 @@ http
     }
     fs.readFile(file, function (err, buf) {
       if (err) {
-        res.writeHead(404, { "content-type": "text/plain" });
-        return res.end("not found: " + urlPath);
+        // Same behavior as GitHub Pages: serve the custom 404.html if present.
+        return fs.readFile(path.join(root, "404.html"), function (err2, buf404) {
+          if (err2) {
+            res.writeHead(404, { "content-type": "text/plain" });
+            return res.end("not found: " + urlPath);
+          }
+          res.writeHead(404, { "content-type": "text/html; charset=utf-8" });
+          res.end(buf404);
+        });
       }
       res.writeHead(200, {
         "content-type": mime[path.extname(file).toLowerCase()] || "application/octet-stream",
