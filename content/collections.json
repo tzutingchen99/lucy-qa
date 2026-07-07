@@ -3,7 +3,7 @@
     {
       "slug": "qa-beginner",
       "title": "剛入行 QA",
-      "description": "第一份 QA 工作的前六個月，最需要對齊的是語言。這條路線照順序讀：先知道自己在測什麼層級，再把 bug、文件、設計方法、現場高頻詞一次說清楚。",
+      "description": "第一份 QA 工作的前六個月，最需要對齊的是語言。這條路線照順序讀：先知道自己在測什麼層級，再把 bug、文件、設計方法、開會常聽到的詞一次說清楚。",
       "posts": ["test-levels", "bug-language", "test-docs", "test-design", "common-terms"]
     },
     {
