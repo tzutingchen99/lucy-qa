@@ -54,6 +54,14 @@
       "status": "published"
     },
     {
+      "slug": "test-design",
+      "title": "測試設計技術",
+      "date": "2026-07-07",
+      "tag": "術語",
+      "summary": "測試案例靠直覺想的問題不是測太少，是不知道少了什麼。等價分割、邊界值、決策表、狀態轉換——讓覆蓋有依據的四個方法。",
+      "status": "published"
+    },
+    {
       "slug": "bug-report-minimum-unit",
       "title": "Bug Report 的最小單位是什麼",
       "date": "2026-07-04",
