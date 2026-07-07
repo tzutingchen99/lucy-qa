@@ -489,6 +489,40 @@
     return collectionsIndex;
   }
 
+  // Side menu shared by the home page and the collections page.
+  function buildCollectionsMenu(cols, data, currentSlug) {
+    var visible = cols.filter(function (c) {
+      return (c.posts || []).some(function (s) {
+        return data.posts.some(function (p) { return p.slug === s; });
+      });
+    });
+    if (!visible.length) return null;
+    var menu = el(
+      '<nav class="collections-menu" aria-label="合集選單">' +
+        '<p class="collections-menu__label">合集</p>' +
+        '<ul class="collections-menu__list"></ul>' +
+        "</nav>"
+    );
+    var menuList = menu.querySelector(".collections-menu__list");
+    visible.forEach(function (c) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = "#/collections/" + c.slug;
+      a.textContent = c.title;
+      var count = c.posts.filter(function (s) {
+        return data.posts.some(function (p) { return p.slug === s; });
+      }).length;
+      var countEl = document.createElement("span");
+      countEl.className = "collections-menu__count";
+      countEl.textContent = count;
+      a.appendChild(countEl);
+      if (c.slug === currentSlug) a.setAttribute("aria-current", "true");
+      li.appendChild(a);
+      menuList.appendChild(li);
+    });
+    return menu;
+  }
+
   async function viewCollections(slugParam) {
     markNav("collections");
     var data = await loadPostsIndex();
@@ -545,32 +579,10 @@
     });
     body.appendChild(list);
 
-    var menu = el(
-      '<nav class="collections-menu" aria-label="合集選單">' +
-        '<p class="collections-menu__label">合集</p>' +
-        '<ul class="collections-menu__list"></ul>' +
-        "</nav>"
-    );
-    var menuList = menu.querySelector(".collections-menu__list");
-    cols.forEach(function (c) {
-      var li = document.createElement("li");
-      var a = document.createElement("a");
-      a.href = "#/collections/" + c.slug;
-      a.textContent = c.title;
-      var count = c.posts.filter(function (s) {
-        return data.posts.some(function (p) { return p.slug === s; });
-      }).length;
-      var countEl = document.createElement("span");
-      countEl.className = "collections-menu__count";
-      countEl.textContent = count;
-      a.appendChild(countEl);
-      if (c.slug === current.slug) a.setAttribute("aria-current", "true");
-      li.appendChild(a);
-      menuList.appendChild(li);
-    });
+    var menu = buildCollectionsMenu(cols, data, current.slug);
 
     node.appendChild(body);
-    node.appendChild(menu);
+    if (menu) node.appendChild(menu);
     render(node);
   }
 
@@ -627,7 +639,17 @@
     data.posts.forEach(function (p) {
       list.appendChild(postCard(p));
     });
-    node.appendChild(sec);
+
+    // Post list on the left, collections menu on the right.
+    var grid = el('<div class="home-grid"></div>');
+    grid.appendChild(sec);
+    try {
+      var menu = buildCollectionsMenu(await loadCollections(), data, null);
+      if (menu) grid.appendChild(menu);
+    } catch (err) {
+      /* collections are optional on home */
+    }
+    node.appendChild(grid);
 
     render(node);
   }

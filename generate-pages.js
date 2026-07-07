@@ -294,6 +294,23 @@ ${p.tag ? `<button class="post-card__tag" data-tag="${esc(p.tag)}">${esc(p.tag)}
 </article>`;
 }
 
+// Same side menu buildCollectionsMenu() makes in app.js.
+function collectionsMenuHtml() {
+  const colsPath = path.join("content", "collections.json");
+  if (!fs.existsSync(colsPath)) return "";
+  const cols = (JSON.parse(fs.readFileSync(colsPath, "utf8")).collections || []).filter(
+    (c) => (c.posts || []).some((s) => posts.some((p) => p.slug === s))
+  );
+  if (!cols.length) return "";
+  const items = cols
+    .map((c) => {
+      const count = c.posts.filter((s) => posts.some((p) => p.slug === s)).length;
+      return `<li><a href="#/collections/${esc(c.slug)}">${esc(c.title)}<span class="collections-menu__count">${count}</span></a></li>`;
+    })
+    .join("");
+  return `<nav class="collections-menu" aria-label="合集選單"><p class="collections-menu__label">合集</p><ul class="collections-menu__list">${items}</ul></nav>`;
+}
+
 const homeHtml = `
         <div class="home">
           <section class="hero">
@@ -301,6 +318,7 @@ const homeHtml = `
             <h1 class="hero__title">QA 筆記</h1>
             <p class="hero__lede">關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。</p>
           </section>
+          <div class="home-grid">
           <section class="section">
             <div class="section__head">
               <h2 class="section__title">All posts</h2>
@@ -310,6 +328,8 @@ const homeHtml = `
 ${posts.map(postCardHtml).join("\n")}
             </div>
           </section>
+          ${collectionsMenuHtml()}
+          </div>
         </div>
         `;
 

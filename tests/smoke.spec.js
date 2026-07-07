@@ -61,6 +61,18 @@ test("首頁原始 HTML 就有文章連結（爬蟲可見，不靠 JS）", async
   for (const p of posts) {
     expect(html).toContain(`href="posts/${p.slug}/"`);
   }
+  // 右側合集選單也是預渲染的
+  expect(html).toContain('class="collections-menu"');
+});
+
+test("首頁右側顯示合集選單", async ({ page }) => {
+  const collections = require("../content/collections.json").collections;
+  await page.goto("/");
+  const menu = page.locator(".home-grid .collections-menu");
+  await expect(menu).toBeVisible();
+  await expect(menu.locator("a")).toHaveCount(collections.length);
+  await menu.locator("a").first().click();
+  await expect(page.locator(".hero__title")).toHaveText(collections[0].title);
 });
 
 test("TLDR callout 在原始 HTML 就已轉換（爬蟲 / RSS 可見）", async ({ request }) => {

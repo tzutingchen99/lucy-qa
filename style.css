@@ -1379,3 +1379,18 @@ a.breadcrumb__item:hover {
     gap: 1rem;
   }
 }
+
+/* ─── Home grid（文章列表 + 右側合集選單）──────────────── */
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12rem;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
