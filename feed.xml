@@ -5,16 +5,93 @@
     <link>https://tzutingchen99.github.io/lucy-qa/</link>
     <description>關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。</description>
     <language>zh-Hant</language>
-    <lastBuildDate>Fri, 03 Jul 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 06 Jul 2026 16:00:00 GMT</lastBuildDate>
     <atom:link href="https://tzutingchen99.github.io/lucy-qa/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>測試層級與類型</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/posts/test-levels/</link>
+    <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/test-levels</guid>
+    <pubDate>Mon, 06 Jul 2026 16:00:00 GMT</pubDate>
+    <description>「要補 E2E」「unit 就夠」「UAT 何時開始」——第一天開會就會遇到的詞。層級不是規定，是你在選擇要相信什麼、懷疑什麼。</description>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Unit 是「只懷疑這一個函式」，Integration 是「懷疑接起來會不會出事」，E2E 是「什麼都不信，走一遍」。層級不是規定，是你在選擇要相信什麼、懷疑什麼。</p>
+</div>
+<h2 id="一個很常見的第一天">一個很常見的第一天</h2>
+<p>你剛加入一個新團隊，第一天開會，有人說「這個功能要補 E2E」、有人說「先加 unit test 就夠了」、PM 問說「UAT 什麼時候可以開始」。</p>
+<p>你點頭，但你其實不確定這三件事有什麼差別，以及為什麼大家好像在討論三件不同的事。</p>
+<p>這種場景幾乎所有人都遇過。</p>
+<hr>
+<h2 id="先從-SUT-開始">先從 SUT 開始</h2>
+<p><strong>SUT = System Under Test</strong>，被測物。</p>
+<p>聽起來是廢話，但把它說清楚滿有用的：同樣是「結帳」，你可以在測：</p>
+<ul>
+<li>一個負責計算折扣的函式</li>
+<li>「前端打 API、後端寫 DB」這整條路</li>
+<li>真實使用者操作瀏覽器從加入購物車到看到付款成功</li>
+</ul>
+<p>這三個 SUT 不同，測試的方式、速度、維護成本全都不一樣。很多討論其實是因為大家對「我們在測誰」的理解不同。</p>
+<hr>
+<h2 id="測試的三個層級">測試的三個層級</h2>
+<h3 id="Unit-Test（單元測試）">Unit Test（單元測試）</h3>
+<p><strong>在測什麼</strong>：一個函式、一個模組、一個類別。</p>
+<p><strong>怎麼運作</strong>：假設其他東西都是對的，只懷疑「這一個」。外部依賴通常會用假的東西替換掉（Mock/Stub，後面的集數會講）。</p>
+<p><strong>感覺上</strong>：跑最快、跑起來不需要資料庫或網路。邏輯複雜、邊界條件多的地方特別有感。</p>
+<h3 id="Integration-Test（整合測試）">Integration Test（整合測試）</h3>
+<p><strong>在測什麼</strong>：兩個以上的東西接在一起。</p>
+<p><strong>怎麼運作</strong>：個別的東西可能沒問題，但它們「合作」的方式需要被驗。</p>
+<p><strong>感覺上</strong>：比 unit test 慢，但比 E2E 快。通常需要真實的資料庫或外部服務。API 跟資料庫的互動、微服務之間的溝通，這層最有用。</p>
+<h3 id="E2E-Test（端對端測試）">E2E Test（端對端測試）</h3>
+<p><strong>在測什麼</strong>：從使用者的視角，走完一條完整的路。</p>
+<p><strong>怎麼運作</strong>：從 UI 到資料庫全部過一遍，不假設任何東西是對的。</p>
+<p><strong>感覺上</strong>：跑最慢、也最容易壞、維護成本最高。但它是最接近「使用者真正在做什麼」的測試。通常用在核心流程的信心保證。</p>
+<hr>
+<h2 id="Smoke-跟-Sanity：兩個常被混用的詞">Smoke 跟 Sanity：兩個常被混用的詞</h2>
+<p><strong>Smoke Test</strong>
+部署之後，快速確認「有沒有爆」。範圍廣但淺——不是要驗所有細節，是要確認系統還站得住。</p>
+<p>名字來自硬體測試：接上電源，看有沒有冒煙。有煙就不用繼續了。</p>
+<p><strong>Sanity Test</strong>
+針對特定功能，確認「這個改動有沒有把它搞壞」。範圍窄但比 smoke 深一點，通常在 bug 修完之後跑。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>範圍</th>
+<th>深度</th>
+<th>什麼時候跑</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Smoke</td>
+<td>廣</td>
+<td>淺</td>
+<td>每次部署後</td>
+</tr>
+<tr>
+<td>Sanity</td>
+<td>窄</td>
+<td>中</td>
+<td>bug 修完後、特定功能改動後</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="UAT：使用者驗收測試">UAT：使用者驗收測試</h2>
+<p><strong>UAT = User Acceptance Testing</strong></p>
+<p>由真實使用者（或代表使用者的 PO / 業務）來確認「這是我要的東西嗎」。</p>
+<p>UAT 跟 QA 做的測試目的不一樣：QA 在確認「有沒有問題」，UAT 在確認「對不對」。一個功能可以完全沒有 bug，但 UAT 還是過不了——因為做出來的跟使用者實際需要的不一樣。</p>
+<p>所以 UAT 沒辦法取代 QA，兩件事是不同維度的事。</p>
+<hr>
+<h2 id="一個結論">一個結論</h2>
+<blockquote>
+<p><strong>測試的層級不是規定，是你在選擇要「相信」什麼、「懷疑」什麼。這樣想的話，很多選擇就變得很直覺了。</strong></p>
+</blockquote>
+]]></content:encoded>
+  </item>
   <item>
     <title>Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</title>
     <link>https://tzutingchen99.github.io/lucy-qa/posts/common-terms/</link>
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/common-terms</guid>
     <pubDate>Fri, 03 Jul 2026 16:00:00 GMT</pubDate>
     <description>Regression、Flaky、Coverage — 開會都用，但意思不一定一樣。</description>
-    <content:encoded><![CDATA[<h1 id="Flaky、Coverage、Regression：你說的跟我說的一樣嗎？">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</h1>
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Regression 是保護已知正確的狀態，不是「全部再跑一次」；Flaky 的真正代價是讓人不信任紅燈；Coverage 量的是「有沒有跑到」，不是「有沒有驗對」。聽到這些詞，多問一句「你指的是什麼」。</p>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Regression 是保護已知正確的狀態，不是「全部再跑一次」；Flaky 的真正代價是讓人不信任紅燈；Coverage 量的是「有沒有跑到」，不是「有沒有驗對」。聽到這些詞，多問一句「你指的是什麼」。</p>
 </div>
 <h2 id="術語用爛了的問題">術語用爛了的問題</h2>
 <p>有些詞在 QA 圈被說得太多，反而失去了精度。</p>
@@ -85,8 +162,7 @@ def test_divide():
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-report-minimum-unit</guid>
     <pubDate>Fri, 03 Jul 2026 16:00:00 GMT</pubDate>
     <description>收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。</description>
-    <content:encoded><![CDATA[<h1 id="Bug-Report-的最小單位是什麼">Bug Report 的最小單位是什麼</h1>
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug report 的最小單位 = 一條可重現的路徑 + 預期結果。少了這兩個，它不是 bug report，是問題描述。</p>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug report 的最小單位 = 一條可重現的路徑 + 預期結果。少了這兩個，它不是 bug report，是問題描述。</p>
 </div>
 <h2 id="為什麼很多-bug-report-沒辦法被用">為什麼很多 bug report 沒辦法被用</h2>
 <p>收到一個 bug report 說「這個壞掉了」——然後呢？</p>
@@ -136,8 +212,7 @@ def test_divide():
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/test-docs</guid>
     <pubDate>Sat, 27 Jun 2026 16:00:00 GMT</pubDate>
     <description>Test Plan、DoD、Acceptance Criteria — 這些文件不是為了合規，是讓 QA、RD、PM 不用每次從頭對齊的工具。</description>
-    <content:encoded><![CDATA[<h1 id="測試文件與流程">測試文件與流程</h1>
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Test Plan、Acceptance Criteria、DoD、DoR 都在做同一件事：讓 QA、RD、PM 說的「完成」指的是同一件事。文件是溝通工具，不是合規產物。</p>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Test Plan、Acceptance Criteria、DoD、DoR 都在做同一件事：讓 QA、RD、PM 說的「完成」指的是同一件事。文件是溝通工具，不是合規產物。</p>
 </div>
 <h2 id="文件的問題不是「要不要寫」">文件的問題不是「要不要寫」</h2>
 <p>很多團隊在這個問題上卡在錯的地方：「測試文件要寫多詳細？」</p>
@@ -198,8 +273,7 @@ def test_divide():
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-language</guid>
     <pubDate>Tue, 23 Jun 2026 16:00:00 GMT</pubDate>
     <description>Bug、Defect、Severity、Priority⋯⋯這些詞每個人都在用，但說的不一定是同一件事。</description>
-    <content:encoded><![CDATA[<h1 id="Bug-的語言">Bug 的語言</h1>
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug、Defect、Issue、Incident 用在不同場合；Severity 是技術影響、Priority 是處理順序——前者 QA 定，後者團隊一起定。能 reproduce 是好 bug report 的第一條，其他都是裝飾。</p>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug、Defect、Issue、Incident 用在不同場合；Severity 是技術影響、Priority 是處理順序——前者 QA 定，後者團隊一起定。能 reproduce 是好 bug report 的第一條，其他都是裝飾。</p>
 </div>
 <h2 id="一個開會場景">一個開會場景</h2>
 <p>「這個 bug 很嚴重，要馬上修。」</p>
@@ -291,8 +365,7 @@ def test_divide():
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/intent-vs-implementation</guid>
     <pubDate>Sun, 21 Jun 2026 16:00:00 GMT</pubDate>
     <description>重構後一堆測試紅了卻沒 bug — 因為測試在驗錯的東西。</description>
-    <content:encoded><![CDATA[<h1 id="驗意圖，不要驗實作">驗意圖，不要驗實作</h1>
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>測試該驗「對外承諾的行為」，不是「內部怎麼寫的」。重構後測試全紅但功能沒壞，就是測試在驗實作的訊號——重構之後，測試應該全綠。</p>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>測試該驗「對外承諾的行為」，不是「內部怎麼寫的」。重構後測試全紅但功能沒壞，就是測試在驗實作的訊號——重構之後，測試應該全綠。</p>
 </div>
 <h2 id="一個小場景">一個小場景</h2>
 <p>你花了一個下午重構一段邏輯。沒改 API、沒改回傳、行為一模一樣，只是把幾個 if-else 收進一個函式。跑測試——50 個紅了。</p>
@@ -381,6 +454,7 @@ def test_divide():
 <h2 id="已寫的">已寫的</h2>
 <p><strong>術語 / 概念</strong></p>
 <ul>
+<li><a href="https://tzutingchen99.github.io/lucy-qa/posts/test-levels/">測試層級與類型</a> — Unit、Integration、E2E、Smoke、Sanity、UAT，差在你選擇相信什麼。</li>
 <li><a href="https://tzutingchen99.github.io/lucy-qa/posts/bug-language/">Bug 的語言</a> — Bug、Defect、Severity、Priority，這些詞說的不一定是同一件事。</li>
 <li><a href="https://tzutingchen99.github.io/lucy-qa/posts/test-docs/">測試文件與流程</a> — Test Plan、DoD、Acceptance Criteria 是什麼、怎麼用。</li>
 <li><a href="https://tzutingchen99.github.io/lucy-qa/posts/common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a> — 被說爛的詞，重新說清楚。</li>
@@ -396,7 +470,6 @@ def test_divide():
 <h2 id="還在排隊的">還在排隊的</h2>
 <p><strong>術語 / 概念（系列的其他集數）</strong></p>
 <ul>
-<li><strong>測試層級與類型</strong> — Unit、Integration、E2E、Smoke、Sanity、UAT。</li>
 <li><strong>測試設計技術</strong> — 等價分割、邊界值、決策表、狀態轉換。</li>
 <li><strong>Test Double</strong> — Mock、Stub、Fake、Spy，差在意圖。</li>
 <li>再後面：自動化術語、API 測試、CI/CD、效能測試、AI 時代的新術語。</li>

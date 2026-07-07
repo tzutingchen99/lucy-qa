@@ -8,6 +8,7 @@
 
 **術語 / 概念**
 
+- [測試層級與類型](../test-levels/) — Unit、Integration、E2E、Smoke、Sanity、UAT，差在你選擇相信什麼。
 - [Bug 的語言](../bug-language/) — Bug、Defect、Severity、Priority，這些詞說的不一定是同一件事。
 - [測試文件與流程](../test-docs/) — Test Plan、DoD、Acceptance Criteria 是什麼、怎麼用。
 - [Flaky、Coverage、Regression：你說的跟我說的一樣嗎？](../common-terms/) — 被說爛的詞，重新說清楚。
@@ -24,7 +25,6 @@
 
 **術語 / 概念（系列的其他集數）**
 
-- **測試層級與類型** — Unit、Integration、E2E、Smoke、Sanity、UAT。
 - **測試設計技術** — 等價分割、邊界值、決策表、狀態轉換。
 - **Test Double** — Mock、Stub、Fake、Spy，差在意圖。
 - 再後面：自動化術語、API 測試、CI/CD、效能測試、AI 時代的新術語。
