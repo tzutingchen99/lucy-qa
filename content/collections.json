@@ -11,6 +11,12 @@
       "title": "Bug 溝通",
       "description": "Bug 不是找到就結束了——要讓對的人理解它、處理它。從說對詞，到寫出一條可以被重現的路徑，到 bug 重開之後怎麼歸因。",
       "posts": ["bug-language", "bug-report-minimum-unit", "bug-reopen"]
+    },
+    {
+      "slug": "test-strategy",
+      "title": "測試策略",
+      "description": "「測試策略」每個人都會說，但拿到一個真實功能，要怎麼開始想？這個系列用具體情境拆解思考過程：先問清楚邊界，再決定要測什麼、不測什麼。",
+      "posts": ["login-test-strategy", "search-test-strategy"]
     }
   ]
 }
