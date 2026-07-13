@@ -69,6 +69,14 @@
       "summary": "收到「這個壞掉了」然後呢？Bug report 缺的不是字數，是一條可以被重現的路徑。",
       "status": "published",
       "updated": "2026-07-07"
+    },
+    {
+      "slug": "bug-reopen",
+      "title": "Bug 重開了，是誰的問題",
+      "date": "2026-07-13",
+      "tag": "工程文化",
+      "summary": "Bug 被重開，「你修不好」和「你沒驗到」通常都只對一半。重開是一個訊號：某個環節的流程沒有到位。",
+      "status": "published"
     }
   ]
 }
