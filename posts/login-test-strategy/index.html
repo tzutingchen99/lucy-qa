@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>一個登入功能，你會怎麼測 — QA 筆記</title>
+    <meta name="description" content="「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。" />
+    <link rel="canonical" href="https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="QA 筆記" />
+    <meta property="og:title" content="一個登入功能，你會怎麼測" />
+    <meta property="og:description" content="「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。" />
+    <meta property="og:url" content="https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/" />
+    <meta property="article:published_time" content="2026-07-13" />
+    <meta property="og:image" content="https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png" />
+    <meta name="twitter:title" content="一個登入功能，你會怎麼測" />
+    <meta name="twitter:description" content="「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"一個登入功能，你會怎麼測","description":"「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。","url":"https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/","datePublished":"2026-07-13","dateModified":"2026-07-13","inLanguage":"zh-Hant","author":{"@type":"Person","name":"Lucy Chen","url":"https://tzutingchen99.github.io/lucy-cv/"},"image":"https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png"}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"QA 筆記","item":"https://tzutingchen99.github.io/lucy-qa/"},{"@type":"ListItem","position":2,"name":"一個登入功能，你會怎麼測"}]}</script>
+    <link rel="alternate" type="application/rss+xml" title="QA 筆記 RSS" href="../../feed.xml" />
+    <link rel="icon" type="image/png" href="../../letter-q.png" />
+    <link rel="apple-touch-icon" href="../../letter-q.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../style.css" />
+    <script>
+      window.goatcounter = {
+        path: function () {
+          return location.pathname + location.hash;
+        },
+      };
+    </script>
+    <script data-goatcounter="https://tzu.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <script>
+      // Early theme detection to avoid flash (keep in sync with index.html)
+      (function () {
+        var saved = localStorage.getItem("qa-theme");
+        var prefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme =
+          saved === "dark" || saved === "light"
+            ? saved
+            : prefersDark
+            ? "dark"
+            : "light";
+        document.documentElement.dataset.theme = theme;
+        var fs = parseFloat(localStorage.getItem("qa-font-size"));
+        if (fs && fs >= 0.9 && fs <= 1.2) {
+          document.documentElement.style.setProperty("--prose-size", fs + "rem");
+        }
+      })();
+    </script>
+  </head>
+  <body data-static-post="login-test-strategy" data-root="../../">
+    <div id="progress-bar" aria-hidden="true"></div>
+    <div class="grid">
+      <header class="strip" role="banner">
+        <a href="../../" class="strip__item strip__brand">QA / Lucy</a>
+        <nav class="strip__nav" aria-label="Primary">
+          <a href="../../#/">Home</a>
+          <a href="../../#/posts" aria-current="page">Posts</a>
+          <a href="../../#/collections">Collections</a>
+          <a href="../../#/about">About</a>
+          <a href="../../#/search">Search</a>
+        </nav>
+        <div class="font-ctrl" role="group" aria-label="字體大小">
+          <button type="button" class="font-ctrl__btn" data-delta="-1" aria-label="縮小字體">A−</button>
+          <button type="button" class="font-ctrl__btn" data-delta="1" aria-label="放大字體">A+</button>
+        </div>
+        <div class="theme" role="group" aria-label="Theme">
+          <button type="button" class="theme__btn" data-theme="light" aria-label="Light theme">○</button>
+          <span class="theme__sep" aria-hidden="true">·</span>
+          <button type="button" class="theme__btn" data-theme="dark" aria-label="Dark theme">●</button>
+        </div>
+      </header>
+
+      <main id="main" class="main" tabindex="-1">
+        <article class="post">
+          <a href="../../#/posts" class="post__back">← All posts</a>
+          <p class="post__meta">2026.07.13  ·  <a href="../../#/tags/測試策略" class="post__tag-link">測試策略</a>  ·  3 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/login-test-strategy/" data-path-legacy="/lucy-qa/#/posts/login-test-strategy"></span></p>
+          <h1 class="post__title">一個登入功能，你會怎麼測</h1>
+          
+          <div class="prose">
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界——支援哪些登入方式、登入後跳哪、有沒有 2FA——再從核心路徑往外擴到帳號狀態、密碼處理、邊界條件。安全性和 session 管理是最容易被忽略但風險最高的地方，而且不是所有案例都值得花同等時間：策略就是決定要測什麼、不測什麼。</p>
+</div>
+<h2 id="「測登入」不是一句話能說完的">「測登入」不是一句話能說完的</h2>
+<p>面試常見題：「你會怎麼測試登入功能？」</p>
+<p>大多數人的答案是：「正確帳密能登入、錯誤帳密不能登入、帳號不存在要顯示錯誤⋯⋯」</p>
+<p>這些都對，但這只是開始。</p>
+<hr>
+<h2 id="先釐清邊界">先釐清邊界</h2>
+<p>在開始想測試案例之前，先問幾個問題：</p>
+<ul>
+<li>這個登入支援哪些方式？（帳密、SSO、第三方登入）</li>
+<li>登入後跳去哪？（首頁、之前想去的頁面、onboarding 流程）</li>
+<li>有沒有 2FA 驗證？</li>
+<li>Session 過期的行為是什麼？</li>
+<li>有沒有「記住我」？</li>
+</ul>
+<p>這些問題的答案決定了你的測試範圍。沒問就開始測，很可能測了一堆但漏了真正重要的東西。</p>
+<hr>
+<h2 id="核心路徑">核心路徑</h2>
+<p><strong>正常流程（Happy Path）</strong>：</p>
+<ul>
+<li>正確帳密登入</li>
+<li>登入後跳到正確頁面</li>
+<li>Session 在預期時間內有效</li>
+</ul>
+<p><strong>帳號狀態</strong>：</p>
+<ul>
+<li>帳號不存在</li>
+<li>密碼錯誤</li>
+<li>帳號被停用 / 鎖定</li>
+<li>帳號尚未驗證 email</li>
+</ul>
+<p><strong>密碼相關</strong>：</p>
+<ul>
+<li>密碼大小寫敏感（確認是否如 spec）</li>
+<li>前後空白處理</li>
+<li>密碼輸入上限次數（lockout 機制）</li>
+</ul>
+<hr>
+<h2 id="邊界條件">邊界條件</h2>
+<ul>
+<li>帳號格式邊界：超長 email、特殊字元</li>
+<li>密碼長度邊界：最短、最長</li>
+<li>並發：同一帳號在不同裝置同時登入</li>
+</ul>
+<hr>
+<h2 id="安全性">安全性</h2>
+<ul>
+<li>SQL injection：在帳號或密碼欄位輸入 <code>&#39; OR 1=1 --</code></li>
+<li>密碼明文：確認網路傳輸有加密（HTTPS）</li>
+<li>錯誤訊息：「帳號不存在」vs「密碼錯誤」應該統一為「帳號或密碼錯誤」（避免資訊洩漏）</li>
+<li>Brute force 防護：多次失敗是否有限制</li>
+</ul>
+<hr>
+<h2 id="Session-和登出">Session 和登出</h2>
+<ul>
+<li>登出後 session token 是否失效</li>
+<li>Token 過期後是否正確跳轉到登入頁</li>
+<li>「記住我」的 token 有效期是否符合 spec</li>
+</ul>
+<hr>
+<h2 id="策略：要測什麼，不測什麼">策略：要測什麼，不測什麼</h2>
+<p>不是所有邊界都值得花同等時間。</p>
+<p><strong>高優先</strong>：密碼錯誤、帳號鎖定、SQL injection、Session 過期</p>
+<p><strong>中優先</strong>：特殊字元帳號、並發登入</p>
+<p><strong>低優先</strong>：超長帳號字串（通常前端有擋）</p>
+<hr>
+<h2 id="一個結論">一個結論</h2>
+<blockquote>
+<p><strong>測登入不難，但測「對的登入」需要先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。</strong></p>
+</blockquote>
+
+          </div>
+          <nav class="post-nav" aria-label="文章導航"><div class="post-nav__item post-nav__item--prev"><span class="post-nav__dir">← 上一篇</span><a href="../test-levels/" class="post-nav__title">測試層級與類型</a></div><div class="post-nav__item post-nav__item--next"><span class="post-nav__dir">下一篇 →</span><a href="../bug-reopen/" class="post-nav__title">Bug 重開了，是誰的問題</a></div></nav>
+        </article>
+      </main>
+
+      <footer class="strip strip--foot" role="contentinfo">
+        <span class="strip__item">QA / Lucy</span>
+        <a href="https://tzutingchen99.github.io/lucy-cv/" class="strip__item">CV ↗</a>
+        <a
+          href="https://www.threads.com/@qauluru"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="strip__item"
+          >Threads ↗</a
+        >
+        <a href="../../feed.xml" class="strip__item">RSS ↗</a>
+        <span id="today-views" class="strip__item" aria-live="polite"></span>
+        <span id="total-views" class="strip__item" aria-live="polite"></span>
+        <span class="strip__item strip__item--end">2026</span>
+      </footer>
+    </div>
+
+    <button id="back-to-top" aria-label="回到頂部">↑</button>
+    <script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
+    <script src="../../vendor/prism.min.js"></script>
+    <script src="../../vendor/prism-python.min.js"></script>
+    <script src="../../theme.js"></script>
+    <script src="../../app.js"></script>
+  </body>
+</html>

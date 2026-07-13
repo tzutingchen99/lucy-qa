@@ -54,6 +54,85 @@
 ]]></content:encoded>
   </item>
   <item>
+    <title>一個登入功能，你會怎麼測</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/</link>
+    <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/login-test-strategy</guid>
+    <pubDate>Sun, 12 Jul 2026 16:00:00 GMT</pubDate>
+    <description>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。</description>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界——支援哪些登入方式、登入後跳哪、有沒有 2FA——再從核心路徑往外擴到帳號狀態、密碼處理、邊界條件。安全性和 session 管理是最容易被忽略但風險最高的地方，而且不是所有案例都值得花同等時間：策略就是決定要測什麼、不測什麼。</p>
+</div>
+<h2 id="「測登入」不是一句話能說完的">「測登入」不是一句話能說完的</h2>
+<p>面試常見題：「你會怎麼測試登入功能？」</p>
+<p>大多數人的答案是：「正確帳密能登入、錯誤帳密不能登入、帳號不存在要顯示錯誤⋯⋯」</p>
+<p>這些都對，但這只是開始。</p>
+<hr>
+<h2 id="先釐清邊界">先釐清邊界</h2>
+<p>在開始想測試案例之前，先問幾個問題：</p>
+<ul>
+<li>這個登入支援哪些方式？（帳密、SSO、第三方登入）</li>
+<li>登入後跳去哪？（首頁、之前想去的頁面、onboarding 流程）</li>
+<li>有沒有 2FA 驗證？</li>
+<li>Session 過期的行為是什麼？</li>
+<li>有沒有「記住我」？</li>
+</ul>
+<p>這些問題的答案決定了你的測試範圍。沒問就開始測，很可能測了一堆但漏了真正重要的東西。</p>
+<hr>
+<h2 id="核心路徑">核心路徑</h2>
+<p><strong>正常流程（Happy Path）</strong>：</p>
+<ul>
+<li>正確帳密登入</li>
+<li>登入後跳到正確頁面</li>
+<li>Session 在預期時間內有效</li>
+</ul>
+<p><strong>帳號狀態</strong>：</p>
+<ul>
+<li>帳號不存在</li>
+<li>密碼錯誤</li>
+<li>帳號被停用 / 鎖定</li>
+<li>帳號尚未驗證 email</li>
+</ul>
+<p><strong>密碼相關</strong>：</p>
+<ul>
+<li>密碼大小寫敏感（確認是否如 spec）</li>
+<li>前後空白處理</li>
+<li>密碼輸入上限次數（lockout 機制）</li>
+</ul>
+<hr>
+<h2 id="邊界條件">邊界條件</h2>
+<ul>
+<li>帳號格式邊界：超長 email、特殊字元</li>
+<li>密碼長度邊界：最短、最長</li>
+<li>並發：同一帳號在不同裝置同時登入</li>
+</ul>
+<hr>
+<h2 id="安全性">安全性</h2>
+<ul>
+<li>SQL injection：在帳號或密碼欄位輸入 <code>&#39; OR 1=1 --</code></li>
+<li>密碼明文：確認網路傳輸有加密（HTTPS）</li>
+<li>錯誤訊息：「帳號不存在」vs「密碼錯誤」應該統一為「帳號或密碼錯誤」（避免資訊洩漏）</li>
+<li>Brute force 防護：多次失敗是否有限制</li>
+</ul>
+<hr>
+<h2 id="Session-和登出">Session 和登出</h2>
+<ul>
+<li>登出後 session token 是否失效</li>
+<li>Token 過期後是否正確跳轉到登入頁</li>
+<li>「記住我」的 token 有效期是否符合 spec</li>
+</ul>
+<hr>
+<h2 id="策略：要測什麼，不測什麼">策略：要測什麼，不測什麼</h2>
+<p>不是所有邊界都值得花同等時間。</p>
+<p><strong>高優先</strong>：密碼錯誤、帳號鎖定、SQL injection、Session 過期</p>
+<p><strong>中優先</strong>：特殊字元帳號、並發登入</p>
+<p><strong>低優先</strong>：超長帳號字串（通常前端有擋）</p>
+<hr>
+<h2 id="一個結論">一個結論</h2>
+<blockquote>
+<p><strong>測登入不難，但測「對的登入」需要先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。</strong></p>
+</blockquote>
+]]></content:encoded>
+  </item>
+  <item>
     <title>測試層級與類型</title>
     <link>https://tzutingchen99.github.io/lucy-qa/posts/test-levels/</link>
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/test-levels</guid>
