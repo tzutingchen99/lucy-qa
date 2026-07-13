@@ -11,7 +11,7 @@
     <meta property="og:title" content="一個登入功能，你會怎麼測" />
     <meta property="og:description" content="「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。" />
     <meta property="og:url" content="https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/" />
-    <meta property="article:published_time" content="2026-07-13" />
+    <meta property="article:published_time" content="2026-07-12" />
     <meta property="og:image" content="https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -19,7 +19,7 @@
     <meta name="twitter:image" content="https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png" />
     <meta name="twitter:title" content="一個登入功能，你會怎麼測" />
     <meta name="twitter:description" content="「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"一個登入功能，你會怎麼測","description":"「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。","url":"https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/","datePublished":"2026-07-13","dateModified":"2026-07-13","inLanguage":"zh-Hant","author":{"@type":"Person","name":"Lucy Chen","url":"https://tzutingchen99.github.io/lucy-cv/"},"image":"https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png"}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"一個登入功能，你會怎麼測","description":"「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。","url":"https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/","datePublished":"2026-07-12","dateModified":"2026-07-12","inLanguage":"zh-Hant","author":{"@type":"Person","name":"Lucy Chen","url":"https://tzutingchen99.github.io/lucy-cv/"},"image":"https://tzutingchen99.github.io/lucy-qa/og/login-test-strategy.png"}</script>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"QA 筆記","item":"https://tzutingchen99.github.io/lucy-qa/"},{"@type":"ListItem","position":2,"name":"一個登入功能，你會怎麼測"}]}</script>
     <link rel="alternate" type="application/rss+xml" title="QA 筆記 RSS" href="../../feed.xml" />
     <link rel="icon" type="image/png" href="../../letter-q.png" />
@@ -86,9 +86,9 @@
       <main id="main" class="main" tabindex="-1">
         <article class="post">
           <a href="../../#/posts" class="post__back">← All posts</a>
-          <p class="post__meta">2026.07.13  ·  <a href="../../#/tags/測試策略" class="post__tag-link">測試策略</a>  ·  3 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/login-test-strategy/" data-path-legacy="/lucy-qa/#/posts/login-test-strategy"></span></p>
+          <p class="post__meta">2026.07.12  ·  <a href="../../#/tags/測試策略" class="post__tag-link">測試策略</a>  ·  3 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/login-test-strategy/" data-path-legacy="/lucy-qa/#/posts/login-test-strategy"></span></p>
           <h1 class="post__title">一個登入功能，你會怎麼測</h1>
-          
+          <nav class="series" aria-label="測試策略 系列"><p class="series__label">測試策略 系列  1 / 2</p><ul class="series__list"><li class="series__item series__item--current"><span class="series__num">1.</span><span>一個登入功能，你會怎麼測</span></li><li class="series__item"><span class="series__num">2.</span><a href="../search-test-strategy/">搜尋功能的測試策略</a></li></ul></nav>
           <div class="prose">
 <div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界——支援哪些登入方式、登入後跳哪、有沒有 2FA——再從核心路徑往外擴到帳號狀態、密碼處理、邊界條件。安全性和 session 管理是最容易被忽略但風險最高的地方，而且不是所有案例都值得花同等時間：策略就是決定要測什麼、不測什麼。</p>
 </div>
@@ -163,7 +163,7 @@
 </blockquote>
 
           </div>
-          <nav class="post-nav" aria-label="文章導航"><div class="post-nav__item post-nav__item--prev"><span class="post-nav__dir">← 上一篇</span><a href="../test-levels/" class="post-nav__title">測試層級與類型</a></div><div class="post-nav__item post-nav__item--next"><span class="post-nav__dir">下一篇 →</span><a href="../bug-reopen/" class="post-nav__title">Bug 重開了，是誰的問題</a></div></nav>
+          <nav class="post-nav" aria-label="文章導航"><div class="post-nav__item post-nav__item--prev"><span class="post-nav__dir">← 上一篇</span><a href="../bug-reopen/" class="post-nav__title">Bug 重開了，是誰的問題</a></div><div class="post-nav__item post-nav__item--next"><span class="post-nav__dir">下一篇 →</span><a href="../search-test-strategy/" class="post-nav__title">搜尋功能的測試策略</a></div></nav>
         </article>
       </main>
 

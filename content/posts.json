@@ -73,7 +73,7 @@
     {
       "slug": "bug-reopen",
       "title": "Bug 重開了，是誰的問題",
-      "date": "2026-07-13",
+      "date": "2026-07-11",
       "tag": "工程文化",
       "summary": "Bug 被重開，「你修不好」和「你沒驗到」通常都只對一半。重開是一個訊號：某個環節的流程沒有到位。",
       "status": "published"
@@ -81,9 +81,17 @@
     {
       "slug": "login-test-strategy",
       "title": "一個登入功能，你會怎麼測",
-      "date": "2026-07-13",
+      "date": "2026-07-12",
       "tag": "測試策略",
       "summary": "「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。",
+      "status": "published"
+    },
+    {
+      "slug": "search-test-strategy",
+      "title": "搜尋功能的測試策略",
+      "date": "2026-07-13",
+      "tag": "測試策略",
+      "summary": "搜尋測試的重點不是把所有關鍵字都試一遍，是確認邊界行為、安全性、以及 empty state——這三塊最常出問題，也最容易被跳過。",
       "status": "published"
     }
   ]

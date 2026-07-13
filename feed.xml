@@ -8,48 +8,63 @@
     <lastBuildDate>Sun, 12 Jul 2026 16:00:00 GMT</lastBuildDate>
     <atom:link href="https://tzutingchen99.github.io/lucy-qa/feed.xml" rel="self" type="application/rss+xml" />
   <item>
-    <title>Bug 重開了，是誰的問題</title>
-    <link>https://tzutingchen99.github.io/lucy-qa/posts/bug-reopen/</link>
-    <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-reopen</guid>
+    <title>搜尋功能的測試策略</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/posts/search-test-strategy/</link>
+    <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/search-test-strategy</guid>
     <pubDate>Sun, 12 Jul 2026 16:00:00 GMT</pubDate>
-    <description>Bug 被重開，「你修不好」和「你沒驗到」通常都只對一半。重開是一個訊號：某個環節的流程沒有到位。</description>
-    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug 重開最容易變成「你修不好」vs「你沒驗到」的互相指責，但重開的原因——治標不治本、regression、驗收條件不清、環境差異——大多指向流程，不是某個人。比追責更有用的是找出這次重開的根因，把它帶進 retrospective，變成流程改善的素材。</p>
+    <description>搜尋測試的重點不是把所有關鍵字都試一遍，是確認邊界行為、安全性、以及 empty state——這三塊最常出問題，也最容易被跳過。</description>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>搜尋看起來簡單，但邊界條件豐富、「正確」的定義往往模糊。開測之前先釐清搜尋範圍、排序依據、模糊搜尋支不支援；核心測試涵蓋有結果、沒結果、邊界輸入三種情況。重點不是把所有關鍵字都試一遍，是確認邊界行為（空搜尋、特殊字元）、安全性（XSS）、以及 empty state——這三塊最常出問題，也最容易被跳過。</p>
 </div>
-<h2 id="一個常見的緊張時刻">一個常見的緊張時刻</h2>
-<p>Bug 被標記為 Fixed，QA 驗收，關掉。隔幾天，同樣的問題又出現了。</p>
-<p>Bug 被重開了。</p>
-<p>這個時刻很容易變成指責的開始：「你修的不完整」vs「你驗收的時候怎麼沒發現」。但這兩個指責通常都只對了一半。</p>
+<h2 id="搜尋比你想的複雜">搜尋比你想的複雜</h2>
+<p>搜尋功能看起來簡單：輸入關鍵字，看結果。</p>
+<p>但搜尋涉及的技術層面多、邊界條件豐富、而且「正確」的定義往往很模糊。這讓它成為一個值得認真想策略的測試對象。</p>
 <hr>
-<h2 id="Bug-重開的原因，大多是流程問題">Bug 重開的原因，大多是流程問題</h2>
-<p><strong>原因一：修復沒有根治，只治了症狀</strong></p>
-<p>RD 修了表面的問題，但根本原因沒有被找到。這次修好了，下次換個條件又出現。</p>
-<p><strong>原因二：修復影響了其他地方</strong></p>
-<p>這次的修復引入了 regression。QA 驗收了原本的 bug，但沒有測到受影響的其他功能。</p>
-<p><strong>原因三：驗收條件不夠清楚</strong></p>
-<p>QA 和 RD 對「這個 bug 算修好了」的定義不一樣。QA 按照原本的步驟驗通過了，但 RD 修的其實是另一個層面的問題。</p>
-<p><strong>原因四：環境差異</strong></p>
-<p>在測試環境驗通了，但 production 的資料狀態或配置不同，問題在 production 上重現。</p>
-<hr>
-<h2 id="誰的問題">誰的問題</h2>
-<p>直接說：<strong>通常是流程的問題，不是某一個人的問題。</strong></p>
+<h2 id="先釐清這個搜尋「應該做什麼」">先釐清這個搜尋「應該做什麼」</h2>
+<p>搜尋功能的 spec 很少是完整的。在開始測之前，先確認：</p>
 <ul>
-<li>如果是根本原因沒找到：這是 RD 需要更深入分析的問題，但 QA 在回報時有沒有提供足夠的資訊來幫助根因分析？</li>
-<li>如果是 regression：QA 的 regression 測試範圍夠嗎？還是 RD 改了一個地方但沒告知影響範圍？</li>
-<li>如果是驗收條件不清楚：這是需求和溝通的問題，不是任何一方的錯。</li>
+<li>搜尋的範圍是什麼？（商品名稱？描述？tag？全文？）</li>
+<li>結果排序的依據是什麼？（相關性？時間？熱門度？）</li>
+<li>支援模糊搜尋嗎？（「iphon」要找到「iPhone」嗎）</li>
+<li>大小寫敏感嗎？</li>
+<li>空白鍵怎麼處理？（「iphone 14」和「iphone14」是同一個查詢嗎）</li>
 </ul>
 <hr>
-<h2 id="比追責更有用的事">比追責更有用的事</h2>
-<p>Bug 重開了，比追責更值得做的是：</p>
-<ol>
-<li>搞清楚這次重開的根因</li>
-<li>這個根因是流程上的什麼問題</li>
-<li>下次要怎麼避免同樣的事發生</li>
-</ol>
-<p>把這個討論帶到 retrospective，讓它成為改善流程的素材，而不是停留在「你搞的」這個層次。</p>
+<h2 id="核心功能測試">核心功能測試</h2>
+<p><strong>有結果的情況</strong>：</p>
+<ul>
+<li>完整關鍵字</li>
+<li>部分關鍵字（如果支援模糊搜尋）</li>
+<li>大寫 / 小寫 / 混合</li>
+</ul>
+<p><strong>沒有結果的情況</strong>：</p>
+<ul>
+<li>確認 empty state 顯示正確</li>
+<li>確認有無建議（「是否要搜尋 X？」）</li>
+</ul>
+<p><strong>邊界輸入</strong>：</p>
+<ul>
+<li>空白搜尋（應該做什麼？全部顯示還是阻止）</li>
+<li>只有空格</li>
+<li>超長字串</li>
+<li>特殊字元：<code>&lt;script&gt;</code>、<code>%</code>、<code>*</code>、SQL 關鍵字</li>
+</ul>
+<hr>
+<h2 id="哪些不值得花太多時間">哪些不值得花太多時間</h2>
+<ul>
+<li>每種可能的關鍵字組合：這是功能驗證，不是 QA 的事，更依賴搜尋引擎本身的品質</li>
+<li>搜尋速度：這是效能測試的範疇，手動測不出什麼意義</li>
+<li>所有特殊字元的排列組合：挑幾個代表性的就夠了</li>
+</ul>
+<hr>
+<h2 id="容易漏掉的地方">容易漏掉的地方</h2>
+<p><strong>XSS</strong>：在搜尋欄輸入 <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>，確認不會被執行</p>
+<p><strong>搜尋記錄</strong>：如果有搜尋歷史功能，確認隱私行為（登出後清除？）</p>
+<p><strong>URL 參數</strong>：搜尋結果是否有對應 URL？URL 直接貼給別人能正確顯示嗎？</p>
+<p><strong>Loading state</strong>：搜尋過程中 UI 是否有 loading 指示？連線慢的情況下行為正確嗎？</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>Bug 重開不是誰的問題，是一個訊號：某個環節的流程沒有到位。追責不解決問題，找根因才能防止下次發生。</strong></p>
+<p><strong>搜尋測試的重點不是把所有關鍵字都試一遍，是確認邊界行為（空搜尋、特殊字元）、安全性（XSS）、以及 empty state 是否正確——這三塊最常出問題，也最容易被跳過。</strong></p>
 </blockquote>
 ]]></content:encoded>
   </item>
@@ -57,7 +72,7 @@
     <title>一個登入功能，你會怎麼測</title>
     <link>https://tzutingchen99.github.io/lucy-qa/posts/login-test-strategy/</link>
     <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/login-test-strategy</guid>
-    <pubDate>Sun, 12 Jul 2026 16:00:00 GMT</pubDate>
+    <pubDate>Sat, 11 Jul 2026 16:00:00 GMT</pubDate>
     <description>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。</description>
     <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界——支援哪些登入方式、登入後跳哪、有沒有 2FA——再從核心路徑往外擴到帳號狀態、密碼處理、邊界條件。安全性和 session 管理是最容易被忽略但風險最高的地方，而且不是所有案例都值得花同等時間：策略就是決定要測什麼、不測什麼。</p>
 </div>
@@ -129,6 +144,52 @@
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
 <p><strong>測登入不難，但測「對的登入」需要先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。</strong></p>
+</blockquote>
+]]></content:encoded>
+  </item>
+  <item>
+    <title>Bug 重開了，是誰的問題</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/posts/bug-reopen/</link>
+    <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/bug-reopen</guid>
+    <pubDate>Fri, 10 Jul 2026 16:00:00 GMT</pubDate>
+    <description>Bug 被重開，「你修不好」和「你沒驗到」通常都只對一半。重開是一個訊號：某個環節的流程沒有到位。</description>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug 重開最容易變成「你修不好」vs「你沒驗到」的互相指責，但重開的原因——治標不治本、regression、驗收條件不清、環境差異——大多指向流程，不是某個人。比追責更有用的是找出這次重開的根因，把它帶進 retrospective，變成流程改善的素材。</p>
+</div>
+<h2 id="一個常見的緊張時刻">一個常見的緊張時刻</h2>
+<p>Bug 被標記為 Fixed，QA 驗收，關掉。隔幾天，同樣的問題又出現了。</p>
+<p>Bug 被重開了。</p>
+<p>這個時刻很容易變成指責的開始：「你修的不完整」vs「你驗收的時候怎麼沒發現」。但這兩個指責通常都只對了一半。</p>
+<hr>
+<h2 id="Bug-重開的原因，大多是流程問題">Bug 重開的原因，大多是流程問題</h2>
+<p><strong>原因一：修復沒有根治，只治了症狀</strong></p>
+<p>RD 修了表面的問題，但根本原因沒有被找到。這次修好了，下次換個條件又出現。</p>
+<p><strong>原因二：修復影響了其他地方</strong></p>
+<p>這次的修復引入了 regression。QA 驗收了原本的 bug，但沒有測到受影響的其他功能。</p>
+<p><strong>原因三：驗收條件不夠清楚</strong></p>
+<p>QA 和 RD 對「這個 bug 算修好了」的定義不一樣。QA 按照原本的步驟驗通過了，但 RD 修的其實是另一個層面的問題。</p>
+<p><strong>原因四：環境差異</strong></p>
+<p>在測試環境驗通了，但 production 的資料狀態或配置不同，問題在 production 上重現。</p>
+<hr>
+<h2 id="誰的問題">誰的問題</h2>
+<p>直接說：<strong>通常是流程的問題，不是某一個人的問題。</strong></p>
+<ul>
+<li>如果是根本原因沒找到：這是 RD 需要更深入分析的問題，但 QA 在回報時有沒有提供足夠的資訊來幫助根因分析？</li>
+<li>如果是 regression：QA 的 regression 測試範圍夠嗎？還是 RD 改了一個地方但沒告知影響範圍？</li>
+<li>如果是驗收條件不清楚：這是需求和溝通的問題，不是任何一方的錯。</li>
+</ul>
+<hr>
+<h2 id="比追責更有用的事">比追責更有用的事</h2>
+<p>Bug 重開了，比追責更值得做的是：</p>
+<ol>
+<li>搞清楚這次重開的根因</li>
+<li>這個根因是流程上的什麼問題</li>
+<li>下次要怎麼避免同樣的事發生</li>
+</ol>
+<p>把這個討論帶到 retrospective，讓它成為改善流程的素材，而不是停留在「你搞的」這個層次。</p>
+<hr>
+<h2 id="一個結論">一個結論</h2>
+<blockquote>
+<p><strong>Bug 重開不是誰的問題，是一個訊號：某個環節的流程沒有到位。追責不解決問題，找根因才能防止下次發生。</strong></p>
 </blockquote>
 ]]></content:encoded>
   </item>
