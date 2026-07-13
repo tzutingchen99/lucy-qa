@@ -9,8 +9,8 @@
     {
       "slug": "bug-communication",
       "title": "Bug 溝通",
-      "description": "Bug 不是找到就結束了——要讓對的人理解它、處理它。從說對詞，到寫出一條可以被重現的路徑。",
-      "posts": ["bug-language", "bug-report-minimum-unit"]
+      "description": "Bug 不是找到就結束了——要讓對的人理解它、處理它。從說對詞，到寫出一條可以被重現的路徑，到 bug 重開之後怎麼歸因。",
+      "posts": ["bug-language", "bug-report-minimum-unit", "bug-reopen"]
     }
   ]
 }
