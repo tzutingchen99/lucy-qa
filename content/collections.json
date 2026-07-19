@@ -16,7 +16,7 @@
       "slug": "test-strategy",
       "title": "測試策略",
       "description": "「測試策略」每個人都會說，但拿到一個真實功能，要怎麼開始想？這個系列用具體情境拆解思考過程：先問清楚邊界，再決定要測什麼、不測什麼。",
-      "posts": ["login-test-strategy", "search-test-strategy"]
+      "posts": ["login-test-strategy", "search-test-strategy", "time-constraint-test-strategy"]
     }
   ]
 }

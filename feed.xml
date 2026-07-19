@@ -5,8 +5,64 @@
     <link>https://tzutingchen99.github.io/lucy-qa/</link>
     <description>關於自動化、AI 輔助測試，以及把測試寫成意圖而不是實作的筆記。</description>
     <language>zh-Hant</language>
-    <lastBuildDate>Sun, 12 Jul 2026 16:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 18 Jul 2026 16:00:00 GMT</lastBuildDate>
     <atom:link href="https://tzutingchen99.github.io/lucy-qa/feed.xml" rel="self" type="application/rss+xml" />
+  <item>
+    <title>功能只有 3 天，測試要怎麼取捨</title>
+    <link>https://tzutingchen99.github.io/lucy-qa/posts/time-constraint-test-strategy/</link>
+    <guid isPermaLink="false">https://tzutingchen99.github.io/lucy-qa/#/posts/time-constraint-test-strategy</guid>
+    <pubDate>Sat, 18 Jul 2026 16:00:00 GMT</pubDate>
+    <description>時間不夠是常態。先確認風險等級，集中測高風險的核心路徑，然後把沒測的範圍和風險說清楚——讓上線決策有資訊，比假裝沒問題更負責任。</description>
+    <content:encoded><![CDATA[<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>時間不夠是常態，不是例外。時間壓縮下，先確認功能的風險等級：金流、帳號安全、核心業務流程不能省；UI 細節、邊緣功能可以精簡。測試集中在核心路徑加最重要的錯誤情境，然後把沒測的範圍和風險明確說出來——讓上線決策有資訊，比讓 QA 假裝沒問題更負責任。</p>
+</div>
+<h2 id="時間不夠是常態，不是例外">時間不夠是常態，不是例外</h2>
+<p>「這次 deadline 很趕，測試能不能壓縮？」</p>
+<p>這個問題在軟體開發裡幾乎是必然發生的。時間壓力下的測試決策，是 QA 實際工作中最常需要做的判斷。</p>
+<hr>
+<h2 id="取捨的前提：先確認這個功能的風險等級">取捨的前提：先確認這個功能的風險等級</h2>
+<p>不是所有功能的測試都應該用同樣的標準。</p>
+<p><strong>高風險功能</strong>（不能省）：</p>
+<ul>
+<li>金流、付款、退款</li>
+<li>帳號安全、權限管理</li>
+<li>核心業務流程（結帳、預約、訂單）</li>
+<li>資料寫入、資料刪除</li>
+</ul>
+<p><strong>中風險功能</strong>（可以精簡）：</p>
+<ul>
+<li>新功能的非核心路徑</li>
+<li>UI 的視覺細節</li>
+<li>效能優化（不影響功能正確性）</li>
+</ul>
+<p><strong>低風險功能</strong>（可以快測）：</p>
+<ul>
+<li>文字調整、顏色改動</li>
+<li>隱藏在深層的設定頁面</li>
+<li>影響範圍很小的邊緣功能</li>
+</ul>
+<hr>
+<h2 id="時間壓縮的策略">時間壓縮的策略</h2>
+<p><strong>策略一：只測核心路徑 + 最重要的錯誤情境</strong></p>
+<p>Happy path 一定要測。然後選出「這個功能如果壞掉，用戶會完全無法完成什麼」——那些情境也要測。其他邊界條件放到下次。</p>
+<p><strong>策略二：讓風險透明</strong></p>
+<p>如果時間真的不夠，不要假裝測得很完整。明確告訴 PM 和 RD：「這次我測了哪些範圍，哪些沒有時間測，這些沒測的地方的風險是什麼。」</p>
+<p>讓風險透明，讓「要不要上線」成為有資訊的決定，而不是 QA 一個人扛。</p>
+<p><strong>策略三：上線後快速驗收</strong></p>
+<p>有些低風險問題可以「先上線，有問題快速修」。但這個決定要有明確的監控和快速回滾的機制，不是上了線就不管。</p>
+<hr>
+<h2 id="不能做的事">不能做的事</h2>
+<ul>
+<li>假裝測完了，但其實沒測</li>
+<li>因為時間壓力跳過安全性測試（金流、帳號相關）</li>
+<li>接受「我們自己測過了」作為 QA 測試的替代</li>
+</ul>
+<hr>
+<h2 id="一個結論">一個結論</h2>
+<blockquote>
+<p><strong>時間壓縮下，先確認功能的風險等級，集中在高風險的核心路徑；省下來的時間說清楚哪些沒測、風險是什麼。讓上線決策有資訊，比讓 QA 假裝沒問題更負責任。</strong></p>
+</blockquote>
+]]></content:encoded>
+  </item>
   <item>
     <title>搜尋功能的測試策略</title>
     <link>https://tzutingchen99.github.io/lucy-qa/posts/search-test-strategy/</link>
