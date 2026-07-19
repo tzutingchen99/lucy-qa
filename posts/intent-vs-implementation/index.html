@@ -91,21 +91,21 @@
           <h1 class="post__title">驗意圖，不要驗實作</h1>
           
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>測試該驗「對外承諾的行為」，不是「內部怎麼寫的」。重構後測試全紅但功能沒壞，就是測試在驗實作的訊號——重構之後，測試應該全綠。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>測試該驗「對外承諾的行為」，不是「內部怎麼寫的」。重構後測試全紅但功能沒壞，就是測試在驗實作的訊號——重構之後，測試應該全綠</p>
 </div>
 <h2 id="一個小場景">一個小場景</h2>
-<p>你花了一個下午重構一段邏輯。沒改 API、沒改回傳、行為一模一樣，只是把幾個 if-else 收進一個函式。跑測試——50 個紅了。</p>
-<p>仔細看才發現：那些測試在斷言「<code>_calculate_discount</code> 有被呼叫」、「內部走了第二條 path」、「mock 的 SQL 字串長這樣」。</p>
-<p>功能沒壞，但測試說壞了。<strong>這種測試在驗「你怎麼寫的」，不是「你要做的事」。</strong></p>
+<p>你花了一個下午重構一段邏輯。沒改 API、沒改回傳、行為一模一樣，只是把幾個 if-else 收進一個函式。跑測試——50 個紅了</p>
+<p>仔細看才發現：那些測試在斷言「<code>_calculate_discount</code> 有被呼叫」、「內部走了第二條 path」、「mock 的 SQL 字串長這樣」</p>
+<p>功能沒壞，但測試說壞了。<strong>這種測試在驗「你怎麼寫的」，不是「你要做的事」</strong></p>
 <h2 id="一個比喻">一個比喻</h2>
-<p>你叫外送。你在乎的是：<strong>東西有沒有送到、品項對不對、溫度可不可以</strong>。這就是「意圖」。</p>
-<p>你不在乎：<strong>騎手騎哪條路、用哪個包包、停哪個紅綠燈</strong>。這些是「實作」。</p>
-<p>好的驗收，是檢查送到的東西。壞的驗收，是裝 GPS 跟騎手吵說「你為什麼不走我期待的那條路」——他換了條更快的路你還氣他。</p>
+<p>你叫外送。你在乎的是：<strong>東西有沒有送到、品項對不對、溫度可不可以</strong>。這就是「意圖」</p>
+<p>你不在乎：<strong>騎手騎哪條路、用哪個包包、停哪個紅綠燈</strong>。這些是「實作」</p>
+<p>好的驗收，是檢查送到的東西。壞的驗收，是裝 GPS 跟騎手吵說「你為什麼不走我期待的那條路」——他換了條更快的路你還氣他</p>
 <p><strong>意圖 = 對外承諾的契約</strong>（行為、結果、狀態）
 <strong>實作 = 為了做到那個承諾，內部選用的資料結構、函式、SQL、第三方 lib</strong></p>
-<p>換句話說：意圖紅了，是真的有 bug；實作紅了，多半只是有人換了條更快的路。</p>
+<p>換句話說：意圖紅了，是真的有 bug；實作紅了，多半只是有人換了條更快的路</p>
 <h2 id="一個對照例">一個對照例</h2>
-<p>假設要驗「VIP3 客戶下 100 USDT 的單，手續費應該是 0.05」。</p>
+<p>假設要驗「VIP3 客戶下 100 USDT 的單，手續費應該是 0.05」</p>
 <p><strong>驗實作（不好）</strong></p>
 <pre><code class="language-python">def test_calculate_fee():
     calc = FeeCalculator(tier=&quot;VIP3&quot;)
@@ -113,26 +113,26 @@
     assert calc._apply_vip_discount.called      # 偷看內部
     assert calc._round_to_8_decimals.called     # 偷看內部
 </code></pre>
-<p>之後你把 VIP 折扣改成查表、把 rounding 內聯掉——測試紅，但結果完全正確。</p>
+<p>之後你把 VIP 折扣改成查表、把 rounding 內聯掉——測試紅，但結果完全正確</p>
 <p><strong>驗意圖（好）</strong></p>
 <pre><code class="language-python">def test_calculate_fee():
     fee = FeeCalculator(tier=&quot;VIP3&quot;).calculate(notional=100)
     assert fee == Decimal(&quot;0.05000000&quot;)
 </code></pre>
-<p>你只在乎結果。內部怎麼算的，<strong>不關測試的事</strong>。</p>
+<p>你只在乎結果。內部怎麼算的，<strong>不關測試的事</strong></p>
 <h2 id="兩個快速判斷句">兩個快速判斷句</h2>
 <p>寫 assert 之前先問自己兩個問題：</p>
 <ol>
-<li><strong>如果換一個合理的實作方式，這個斷言會不會打破？</strong> 會 → 你在驗實作。</li>
-<li><strong>使用者只看 API 文件的話，會在意這件事嗎？</strong> 不會 → 你在驗實作。</li>
+<li><strong>如果換一個合理的實作方式，這個斷言會不會打破？</strong> 會 → 你在驗實作</li>
+<li><strong>使用者只看 API 文件的話，會在意這件事嗎？</strong> 不會 → 你在驗實作</li>
 </ol>
-<p>兩題只要有一題答「是」，就把那個 assert 改成「對結果的斷言」。</p>
+<p>兩題只要有一題答「是」，就把那個 assert 改成「對結果的斷言」</p>
 <h2 id="例外：什麼時候可以驗實作">例外：什麼時候可以驗實作</h2>
 <p>不是所有實作細節都不能驗。三種情況例外，但要意識到自己在做例外：</p>
 <ul>
-<li><strong>實作本身就是契約</strong>——例如「這個 API 必須冪等」、「失敗一定要寫 audit log」。這些不是細節，是承諾。</li>
-<li><strong>回歸測試固化已知 bug</strong>——例如某次 race condition 修好後，明確驗「順序是 lock → cancel」。「順序」就是修復的本體。</li>
-<li><strong>安全 / 合規邊界</strong>——例如「不能 log 完整卡號」、「session token 不能寫 localStorage」。這類負向斷言必須驗內部，因為違反就是事故。</li>
+<li><strong>實作本身就是契約</strong>——例如「這個 API 必須冪等」、「失敗一定要寫 audit log」。這些不是細節，是承諾</li>
+<li><strong>回歸測試固化已知 bug</strong>——例如某次 race condition 修好後，明確驗「順序是 lock → cancel」。「順序」就是修復的本體</li>
+<li><strong>安全 / 合規邊界</strong>——例如「不能 log 完整卡號」、「session token 不能寫 localStorage」。這類負向斷言必須驗內部，因為違反就是事故</li>
 </ul>
 <h2 id="實務上怎麼套用">實務上怎麼套用</h2>
 <table>
@@ -161,9 +161,9 @@
 </tbody></table>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>重構之後測試應該全綠。如果不是綠的，要嘛功能真的壞了，要嘛你的測試在驗錯的東西。</strong></p>
+<p><strong>重構之後測試應該全綠。如果不是綠的，要嘛功能真的壞了，要嘛你的測試在驗錯的東西</strong></p>
 </blockquote>
-<p>紅得有意義是品質訊號，紅得是雜訊就是測試債。</p>
+<p>紅得有意義是品質訊號，紅得是雜訊就是測試債</p>
 
           </div>
           <nav class="post-nav" aria-label="文章導航"><div class="post-nav__item post-nav__item--prev"><span class="post-nav__dir">← 上一篇</span><a href="../hello/" class="post-nav__title">一個放散落東西的地方</a></div><div class="post-nav__item post-nav__item--next"><span class="post-nav__dir">下一篇 →</span><a href="../bug-language/" class="post-nav__title">Bug 的語言</a></div></nav>

@@ -90,12 +90,12 @@
           <h1 class="post__title">一個登入功能，你會怎麼測</h1>
           <nav class="series" aria-label="測試策略 系列"><p class="series__label">測試策略 系列  1 / 3</p><ul class="series__list"><li class="series__item series__item--current"><span class="series__num">1.</span><span>一個登入功能，你會怎麼測</span></li><li class="series__item"><span class="series__num">2.</span><a href="../search-test-strategy/">搜尋功能的測試策略</a></li><li class="series__item"><span class="series__num">3.</span><a href="../time-constraint-test-strategy/">功能只有 3 天，測試要怎麼取捨</a></li></ul></nav>
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界——支援哪些登入方式、登入後跳哪、有沒有 2FA——再從核心路徑往外擴到帳號狀態、密碼處理、邊界條件。安全性和 session 管理是最容易被忽略但風險最高的地方，而且不是所有案例都值得花同等時間：策略就是決定要測什麼、不測什麼。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>「測登入」不是列完正確帳密、錯誤帳密就結束。先問清楚邊界——支援哪些登入方式、登入後跳哪、有沒有 2FA——再從核心路徑往外擴到帳號狀態、密碼處理、邊界條件。安全性和 session 管理是最容易被忽略但風險最高的地方，而且不是所有案例都值得花同等時間：策略就是決定要測什麼、不測什麼</p>
 </div>
 <h2 id="「測登入」不是一句話能說完的">「測登入」不是一句話能說完的</h2>
 <p>面試常見題：「你會怎麼測試登入功能？」</p>
 <p>大多數人的答案是：「正確帳密能登入、錯誤帳密不能登入、帳號不存在要顯示錯誤⋯⋯」</p>
-<p>這些都對，但這只是開始。</p>
+<p>這些都對，但這只是開始</p>
 <hr>
 <h2 id="先釐清邊界">先釐清邊界</h2>
 <p>在開始想測試案例之前，先問幾個問題：</p>
@@ -106,7 +106,7 @@
 <li>Session 過期的行為是什麼？</li>
 <li>有沒有「記住我」？</li>
 </ul>
-<p>這些問題的答案決定了你的測試範圍。沒問就開始測，很可能測了一堆但漏了真正重要的東西。</p>
+<p>這些問題的答案決定了你的測試範圍。沒問就開始測，很可能測了一堆但漏了真正重要的東西</p>
 <hr>
 <h2 id="核心路徑">核心路徑</h2>
 <p><strong>正常流程（Happy Path）</strong>：</p>
@@ -152,14 +152,14 @@
 </ul>
 <hr>
 <h2 id="策略：要測什麼，不測什麼">策略：要測什麼，不測什麼</h2>
-<p>不是所有邊界都值得花同等時間。</p>
+<p>不是所有邊界都值得花同等時間</p>
 <p><strong>高優先</strong>：密碼錯誤、帳號鎖定、SQL injection、Session 過期</p>
 <p><strong>中優先</strong>：特殊字元帳號、並發登入</p>
 <p><strong>低優先</strong>：超長帳號字串（通常前端有擋）</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>測登入不難，但測「對的登入」需要先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方。</strong></p>
+<p><strong>測登入不難，但測「對的登入」需要先問清楚邊界，再從核心路徑往外擴——安全性和 session 管理是最容易被忽略但風險最高的地方</strong></p>
 </blockquote>
 
           </div>

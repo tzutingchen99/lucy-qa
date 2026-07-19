@@ -88,45 +88,45 @@
           <a href="../../#/posts" class="post__back">← All posts</a>
           <p class="post__meta">2026.07.07  ·  <a href="../../#/tags/術語" class="post__tag-link">術語</a>  ·  4 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/test-levels/" data-path-legacy="/lucy-qa/#/posts/test-levels"></span></p>
           <h1 class="post__title">測試層級與類型</h1>
-          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  4 / 5</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item series__item--current"><span class="series__num">4.</span><span>測試層級與類型</span></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li></ul></nav>
+          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  4 / 6</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item series__item--current"><span class="series__num">4.</span><span>測試層級與類型</span></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li><li class="series__item"><span class="series__num">6.</span><a href="../api-testing/">API 測試術語</a></li></ul></nav>
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Unit 是「只懷疑這一個函式」，Integration 是「懷疑接起來會不會出事」，E2E 是「什麼都不信，走一遍」。層級不是規定，是你在選擇要相信什麼、懷疑什麼。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Unit 是「只懷疑這一個函式」，Integration 是「懷疑接起來會不會出事」，E2E 是「什麼都不信，走一遍」。層級不是規定，是你在選擇要相信什麼、懷疑什麼</p>
 </div>
 <h2 id="一個很常見的第一天">一個很常見的第一天</h2>
-<p>你剛加入一個新團隊，第一天開會，有人說「這個功能要補 E2E」、有人說「先加 unit test 就夠了」、PM 問說「UAT 什麼時候可以開始」。</p>
-<p>你點頭，但你其實不確定這三件事有什麼差別，以及為什麼大家好像在討論三件不同的事。</p>
-<p>這種場景幾乎所有人都遇過。</p>
+<p>你剛加入一個新團隊，第一天開會，有人說「這個功能要補 E2E」、有人說「先加 unit test 就夠了」、PM 問說「UAT 什麼時候可以開始」</p>
+<p>你點頭，但你其實不確定這三件事有什麼差別，以及為什麼大家好像在討論三件不同的事</p>
+<p>這種場景幾乎所有人都遇過</p>
 <hr>
 <h2 id="先從-SUT-開始">先從 SUT 開始</h2>
-<p><strong>SUT = System Under Test</strong>，被測物。</p>
+<p><strong>SUT = System Under Test</strong>，被測物</p>
 <p>聽起來是廢話，但把它說清楚滿有用的：同樣是「結帳」，你可以在測：</p>
 <ul>
 <li>一個負責計算折扣的函式</li>
 <li>「前端打 API、後端寫 DB」這整條路</li>
 <li>真實使用者操作瀏覽器從加入購物車到看到付款成功</li>
 </ul>
-<p>這三個 SUT 不同，測試的方式、速度、維護成本全都不一樣。很多討論其實是因為大家對「我們在測誰」的理解不同。</p>
+<p>這三個 SUT 不同，測試的方式、速度、維護成本全都不一樣。很多討論其實是因為大家對「我們在測誰」的理解不同</p>
 <hr>
 <h2 id="測試的三個層級">測試的三個層級</h2>
 <h3 id="Unit-Test（單元測試）">Unit Test（單元測試）</h3>
-<p><strong>在測什麼</strong>：一個函式、一個模組、一個類別。</p>
-<p><strong>怎麼運作</strong>：假設其他東西都是對的，只懷疑「這一個」。外部依賴通常會用假的東西替換掉（Mock/Stub，後面的集數會講）。</p>
-<p><strong>感覺上</strong>：跑最快、跑起來不需要資料庫或網路。邏輯複雜、邊界條件多的地方特別有感。</p>
+<p><strong>在測什麼</strong>：一個函式、一個模組、一個類別</p>
+<p><strong>怎麼運作</strong>：假設其他東西都是對的，只懷疑「這一個」。外部依賴通常會用假的東西替換掉（Mock/Stub，後面的集數會講）</p>
+<p><strong>感覺上</strong>：跑最快、跑起來不需要資料庫或網路。邏輯複雜、邊界條件多的地方特別有感</p>
 <h3 id="Integration-Test（整合測試）">Integration Test（整合測試）</h3>
-<p><strong>在測什麼</strong>：兩個以上的東西接在一起。</p>
-<p><strong>怎麼運作</strong>：個別的東西可能沒問題，但它們「合作」的方式需要被驗。</p>
-<p><strong>感覺上</strong>：比 unit test 慢，但比 E2E 快。通常需要真實的資料庫或外部服務。API 跟資料庫的互動、微服務之間的溝通，這層最有用。</p>
+<p><strong>在測什麼</strong>：兩個以上的東西接在一起</p>
+<p><strong>怎麼運作</strong>：個別的東西可能沒問題，但它們「合作」的方式需要被驗</p>
+<p><strong>感覺上</strong>：比 unit test 慢，但比 E2E 快。通常需要真實的資料庫或外部服務。API 跟資料庫的互動、微服務之間的溝通，這層最有用</p>
 <h3 id="E2E-Test（端對端測試）">E2E Test（端對端測試）</h3>
-<p><strong>在測什麼</strong>：從使用者的視角，走完一條完整的路。</p>
-<p><strong>怎麼運作</strong>：從 UI 到資料庫全部過一遍，不假設任何東西是對的。</p>
-<p><strong>感覺上</strong>：跑最慢、也最容易壞、維護成本最高。但它是最接近「使用者真正在做什麼」的測試。通常用在核心流程的信心保證。</p>
+<p><strong>在測什麼</strong>：從使用者的視角，走完一條完整的路</p>
+<p><strong>怎麼運作</strong>：從 UI 到資料庫全部過一遍，不假設任何東西是對的</p>
+<p><strong>感覺上</strong>：跑最慢、也最容易壞、維護成本最高。但它是最接近「使用者真正在做什麼」的測試。通常用在核心流程的信心保證</p>
 <hr>
 <h2 id="Smoke-跟-Sanity：兩個常被混用的詞">Smoke 跟 Sanity：兩個常被混用的詞</h2>
 <p><strong>Smoke Test</strong>
-部署之後，快速確認「有沒有爆」。範圍廣但淺——不是要驗所有細節，是要確認系統還站得住。</p>
-<p>名字來自硬體測試：接上電源，看有沒有冒煙。有煙就不用繼續了。</p>
+部署之後，快速確認「有沒有爆」。範圍廣但淺——不是要驗所有細節，是要確認系統還站得住</p>
+<p>名字來自硬體測試：接上電源，看有沒有冒煙。有煙就不用繼續了</p>
 <p><strong>Sanity Test</strong>
-針對特定功能，確認「這個改動有沒有把它搞壞」。範圍窄但比 smoke 深一點，通常在 bug 修完之後跑。</p>
+針對特定功能，確認「這個改動有沒有把它搞壞」。範圍窄但比 smoke 深一點，通常在 bug 修完之後跑</p>
 <table>
 <thead>
 <tr>
@@ -152,13 +152,13 @@
 <hr>
 <h2 id="UAT：使用者驗收測試">UAT：使用者驗收測試</h2>
 <p><strong>UAT = User Acceptance Testing</strong></p>
-<p>由真實使用者（或代表使用者的 PO / 業務）來確認「這是我要的東西嗎」。</p>
-<p>UAT 跟 QA 做的測試目的不一樣：QA 在確認「有沒有問題」，UAT 在確認「對不對」。一個功能可以完全沒有 bug，但 UAT 還是過不了——因為做出來的跟使用者實際需要的不一樣。</p>
-<p>所以 UAT 沒辦法取代 QA，兩件事是不同維度的事。</p>
+<p>由真實使用者（或代表使用者的 PO / 業務）來確認「這是我要的東西嗎」</p>
+<p>UAT 跟 QA 做的測試目的不一樣：QA 在確認「有沒有問題」，UAT 在確認「對不對」。一個功能可以完全沒有 bug，但 UAT 還是過不了——因為做出來的跟使用者實際需要的不一樣</p>
+<p>所以 UAT 沒辦法取代 QA，兩件事是不同維度的事</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>測試的層級不是規定，是你在選擇要「相信」什麼、「懷疑」什麼。這樣想的話，很多選擇就變得很直覺了。</strong></p>
+<p><strong>測試的層級不是規定，是你在選擇要「相信」什麼、「懷疑」什麼。這樣想的話，很多選擇就變得很直覺了</strong></p>
 </blockquote>
 
           </div>

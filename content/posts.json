@@ -95,6 +95,14 @@
       "status": "published"
     },
     {
+      "slug": "api-testing",
+      "title": "API 測試術語",
+      "date": "2026-07-18",
+      "tag": "術語",
+      "summary": "API 測試是 CP 值最高的測試層。Contract Testing、Schema Validation、冪等——這些詞都在回答同一個問題：這個介面的行為，跟呼叫方的期待一致嗎？",
+      "status": "published"
+    },
+    {
       "slug": "time-constraint-test-strategy",
       "title": "功能只有 3 天，測試要怎麼取捨",
       "date": "2026-07-19",

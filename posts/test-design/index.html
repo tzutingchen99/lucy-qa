@@ -88,29 +88,29 @@
           <a href="../../#/posts" class="post__back">← All posts</a>
           <p class="post__meta">2026.07.07  ·  <a href="../../#/tags/術語" class="post__tag-link">術語</a>  ·  4 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/test-design/" data-path-legacy="/lucy-qa/#/posts/test-design"></span></p>
           <h1 class="post__title">測試設計技術</h1>
-          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  5 / 5</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item series__item--current"><span class="series__num">5.</span><span>測試設計技術</span></li></ul></nav>
+          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  5 / 6</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item series__item--current"><span class="series__num">5.</span><span>測試設計技術</span></li><li class="series__item"><span class="series__num">6.</span><a href="../api-testing/">API 測試術語</a></li></ul></nav>
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>靠感覺測試的問題不是「測太少」，是「不知道少了什麼」。等價分割決定測哪幾區、邊界值盯最容易出事的點、決策表把組合列全、狀態轉換抓非法路徑——把「感覺要測」變成「知道為什麼測」。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>靠感覺測試的問題不是「測太少」，是「不知道少了什麼」。等價分割決定測哪幾區、邊界值盯最容易出事的點、決策表把組合列全、狀態轉換抓非法路徑——把「感覺要測」變成「知道為什麼測」</p>
 </div>
 <h2 id="測試靠感覺的問題">測試靠感覺的問題</h2>
-<p>你在測一個年齡輸入欄位，接受 18 到 65 歲。你寫了三個測試案例：輸入 25、輸入 0、輸入 100。</p>
+<p>你在測一個年齡輸入欄位，接受 18 到 65 歲。你寫了三個測試案例：輸入 25、輸入 0、輸入 100</p>
 <p>感覺夠了。但 17 跟 18 的行為不同嗎？65 跟 66 呢？負數會怎樣？小數點會怎樣？</p>
-<p>靠感覺測試的問題不是「測太少」，是「你不知道少了什麼」。下面這幾個方法不是公式，是幫你把「感覺要測這個」變成「我知道為什麼要測這個」的框架。</p>
+<p>靠感覺測試的問題不是「測太少」，是「你不知道少了什麼」。下面這幾個方法不是公式，是幫你把「感覺要測這個」變成「我知道為什麼要測這個」的框架</p>
 <hr>
 <h2 id="Test-Case-vs-Test-Scenario">Test Case vs Test Scenario</h2>
-<p>先把這兩個詞分清楚，因為有時候會發現大家說的是不同的東西。</p>
-<p><strong>Test Scenario（測試情境）</strong>：一條使用者旅程，描述「做什麼」。
-例如：「使用者用錯誤密碼登入三次後帳號被鎖定」。</p>
-<p><strong>Test Case（測試案例）</strong>：具體的一筆驗證，有輸入、步驟、預期結果。
+<p>先把這兩個詞分清楚，因為有時候會發現大家說的是不同的東西</p>
+<p><strong>Test Scenario（測試情境）</strong>：一條使用者旅程，描述「做什麼」
+例如：「使用者用錯誤密碼登入三次後帳號被鎖定」</p>
+<p><strong>Test Case（測試案例）</strong>：具體的一筆驗證，有輸入、步驟、預期結果
 例如：</p>
 <pre><code>前置條件：帳號存在，尚未被鎖
 步驟：輸入正確帳號 + 錯誤密碼，重複三次
 預期：第三次失敗後顯示「帳號已鎖定」，無法再嘗試登入
 </code></pre>
-<p>一個 Scenario 可以拆出多個 Test Case。Scenario 讓你看「這條路值不值得測」，Test Case 讓你知道「怎麼測、怎麼判斷有沒有過」。</p>
+<p>一個 Scenario 可以拆出多個 Test Case。Scenario 讓你看「這條路值不值得測」，Test Case 讓你知道「怎麼測、怎麼判斷有沒有過」</p>
 <hr>
 <h2 id="Equivalence-Partitioning（等價分割）">Equivalence Partitioning（等價分割）</h2>
-<p>核心邏輯：<strong>同一類輸入，行為應該一樣，測一個代表值就夠了。</strong></p>
+<p>核心邏輯：<strong>同一類輸入，行為應該一樣，測一個代表值就夠了</strong></p>
 <p>以年齡輸入（18–65）為例：</p>
 <table>
 <thead>
@@ -136,13 +136,13 @@
 <td>80</td>
 </tr>
 </tbody></table>
-<p>不需要測 10、11、12、13⋯⋯因為理論上這些輸入行為一樣，全部都應該被拒絕。測一個代表值就代表了整個分區。</p>
-<p>這個方法省力的地方在於：把無限可能的輸入，收成幾個有意義的類別。</p>
+<p>不需要測 10、11、12、13⋯⋯因為理論上這些輸入行為一樣，全部都應該被拒絕。測一個代表值就代表了整個分區</p>
+<p>這個方法省力的地方在於：把無限可能的輸入，收成幾個有意義的類別</p>
 <hr>
 <h2 id="Boundary-Value-Analysis（邊界值分析）">Boundary Value Analysis（邊界值分析）</h2>
-<p>等價分割告訴你哪幾區，邊界值分析說的是<strong>邊界是最容易出問題的地方，值得多測幾個點</strong>。</p>
-<p><code>&gt;= 18</code> 被寫成 <code>&gt; 18</code>，<code>&lt;= 65</code> 被寫成 <code>&lt; 65</code>——差一個字元，行為完全不同。這種錯誤很常見。</p>
-<p>每個邊界測三個值：邊界本身、邊界內一個、邊界外一個。</p>
+<p>等價分割告訴你哪幾區，邊界值分析說的是<strong>邊界是最容易出問題的地方，值得多測幾個點</strong></p>
+<p><code>&gt;= 18</code> 被寫成 <code>&gt; 18</code>，<code>&lt;= 65</code> 被寫成 <code>&lt; 65</code>——差一個字元，行為完全不同。這種錯誤很常見</p>
+<p>每個邊界測三個值：邊界本身、邊界內一個、邊界外一個</p>
 <p>以 18–65 為例：</p>
 <pre><code>17（邊界外，應拒絕）
 18（邊界，應通過）
@@ -152,10 +152,10 @@
 65（邊界，應通過）
 66（邊界外，應拒絕）
 </code></pre>
-<p>搭配等價分割一起用：分割決定「測哪幾區」，邊界值決定「每區的邊緣要多留意」。</p>
+<p>搭配等價分割一起用：分割決定「測哪幾區」，邊界值決定「每區的邊緣要多留意」</p>
 <hr>
 <h2 id="Decision-Table（決策表）">Decision Table（決策表）</h2>
-<p>有<strong>多個條件組合</strong>的時候，靠感覺很容易漏掉某個組合。</p>
+<p>有<strong>多個條件組合</strong>的時候，靠感覺很容易漏掉某個組合</p>
 <p>假設折扣規則：</p>
 <ul>
 <li>會員 + 訂單 &gt; 1000 → 打八折</li>
@@ -192,10 +192,10 @@
 <td>不打折</td>
 </tr>
 </tbody></table>
-<p>把所有組合列出來，就知道要寫幾個 test case、有沒有漏掉。</p>
+<p>把所有組合列出來，就知道要寫幾個 test case、有沒有漏掉</p>
 <hr>
 <h2 id="State-Transition（狀態轉換）">State Transition（狀態轉換）</h2>
-<p>有明確<strong>流程</strong>和<strong>狀態</strong>的功能適合用這個：訂單、帳號、審核流程。</p>
+<p>有明確<strong>流程</strong>和<strong>狀態</strong>的功能適合用這個：訂單、帳號、審核流程</p>
 <p>核心問題：每個狀態可以接受哪些事件？不應該發生什麼？</p>
 <p>以訂單狀態為例：</p>
 <pre><code>待付款 --[付款成功]--&gt; 已付款
@@ -203,11 +203,11 @@
 配送中 --[簽收]--&gt; 已完成
 待付款 --[取消]--&gt; 已取消
 </code></pre>
-<p>正常路徑容易想到，但非法轉換才是 bug 常藏的地方：已完成的訂單能不能被取消？已取消的訂單能不能付款？這些邊角的場景很容易被跳過。</p>
+<p>正常路徑容易想到，但非法轉換才是 bug 常藏的地方：已完成的訂單能不能被取消？已取消的訂單能不能付款？這些邊角的場景很容易被跳過</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>這些方法不是公式，是幫你把「感覺上應該測這個」轉成「我知道為什麼測這個」。有了依據，漏掉的東西就比較少。</strong></p>
+<p><strong>這些方法不是公式，是幫你把「感覺上應該測這個」轉成「我知道為什麼測這個」。有了依據，漏掉的東西就比較少</strong></p>
 </blockquote>
 
           </div>

@@ -89,27 +89,27 @@
           <a href="../../#/posts" class="post__back">← All posts</a>
           <p class="post__meta">2026.07.04  ·  更新 2026.07.07  ·  <a href="../../#/tags/術語" class="post__tag-link">術語</a>  ·  4 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/common-terms/" data-path-legacy="/lucy-qa/#/posts/common-terms"></span></p>
           <h1 class="post__title">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</h1>
-          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  3 / 5</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item series__item--current"><span class="series__num">3.</span><span>Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</span></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li></ul></nav>
+          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  3 / 6</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item series__item--current"><span class="series__num">3.</span><span>Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</span></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li><li class="series__item"><span class="series__num">6.</span><a href="../api-testing/">API 測試術語</a></li></ul></nav>
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Regression 是保護已知正確的狀態，不是「全部再跑一次」；Flaky 的真正代價是讓人不信任紅燈；Coverage 量的是「有沒有跑到」，不是「有沒有驗對」。聽到這些詞，多問一句「你指的是什麼」。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Regression 是保護已知正確的狀態，不是「全部再跑一次」；Flaky 的真正代價是讓人不信任紅燈；Coverage 量的是「有沒有跑到」，不是「有沒有驗對」。聽到這些詞，多問一句「你指的是什麼」</p>
 </div>
 <h2 id="術語用爛了的問題">術語用爛了的問題</h2>
-<p>有些詞在 QA 圈被說得太多，反而失去了精度。</p>
-<p>「這個測試 flaky」、「Coverage 不夠」、「Regression 要跑一下」——大家都在說，但說的是同一件事嗎？不一定。</p>
-<p>這篇不是要給你背定義，是分享一下我自己遇到這些詞的時候，會怎麼去理解它。</p>
+<p>有些詞在 QA 圈被說得太多，反而失去了精度</p>
+<p>「這個測試 flaky」、「Coverage 不夠」、「Regression 要跑一下」——大家都在說，但說的是同一件事嗎？不一定</p>
+<p>這篇不是要給你背定義，是分享一下我自己遇到這些詞的時候，會怎麼去理解它</p>
 <hr>
 <h2 id="Regression-Test（回歸測試）">Regression Test（回歸測試）</h2>
-<p><strong>Regression Test 不是「再跑一次所有測試」。</strong></p>
-<p>它的核心意義是：確保上次通過的東西，這次改動之後還是通過的。重點在「保護已知正確的狀態」。你每次改了什麼，就有可能影響到其他地方——Regression Test 是偵測這種影響的機制。</p>
+<p><strong>Regression Test 不是「再跑一次所有測試」</strong></p>
+<p>它的核心意義是：確保上次通過的東西，這次改動之後還是通過的。重點在「保護已知正確的狀態」。你每次改了什麼，就有可能影響到其他地方——Regression Test 是偵測這種影響的機制</p>
 <p>聽到「要跑 Regression」的時候，我自己習慣問：</p>
 <ul>
 <li>跑哪些案例？根據是什麼？</li>
 <li>跑的範圍跟這次改動的影響範圍有對應到嗎？</li>
 </ul>
-<p>如果答案是「全部都跑一遍」，那多半不是有策略的 Regression，而是沒有方向的全量測試。</p>
+<p>如果答案是「全部都跑一遍」，那多半不是有策略的 Regression，而是沒有方向的全量測試</p>
 <hr>
 <h2 id="Flaky-Test（不穩定測試）">Flaky Test（不穩定測試）</h2>
-<p><strong>Flaky Test 的定義</strong>：同一段 code 沒有改變，測試有時通過、有時失敗。</p>
+<p><strong>Flaky Test 的定義</strong>：同一段 code 沒有改變，測試有時通過、有時失敗</p>
 <p>來源通常是：</p>
 <ul>
 <li>時序問題（非同步操作、wait 設得不夠）</li>
@@ -117,17 +117,17 @@
 <li>環境問題（測試資料不隔離、外部服務不穩定）</li>
 <li>隨機性（Math.random()、時間相關邏輯）</li>
 </ul>
-<p>Flaky Test 真正的問題不是它失敗，是它讓你無法相信測試結果。</p>
-<p>當 CI 噴紅，你第一個反應是「重跑一下看看」——這個直覺就是 Flaky Test 帶來的副作用。你開始不把紅燈當一回事，真正的 bug 就可能在這裡溜走。</p>
-<p>面對 Flaky Test，我覺得先值得問的是<strong>它值不值得被修</strong>：核心流程的關鍵驗證，值得花時間根治；邊緣功能的低價值測試，考慮直接刪掉，不是一直重跑。</p>
+<p>Flaky Test 真正的問題不是它失敗，是它讓你無法相信測試結果</p>
+<p>當 CI 噴紅，你第一個反應是「重跑一下看看」——這個直覺就是 Flaky Test 帶來的副作用。你開始不把紅燈當一回事，真正的 bug 就可能在這裡溜走</p>
+<p>面對 Flaky Test，我覺得先值得問的是<strong>它值不值得被修</strong>：核心流程的關鍵驗證，值得花時間根治；邊緣功能的低價值測試，考慮直接刪掉，不是一直重跑</p>
 <hr>
 <h2 id="Coverage（覆蓋率）">Coverage（覆蓋率）</h2>
 <p>Coverage 有三種，概念不一樣：</p>
-<p><strong>Line Coverage（行覆蓋率）</strong>：有幾行 code 被執行到。最常用，但也最容易被誤解。</p>
-<p><strong>Branch Coverage（分支覆蓋率）</strong>：每個 if/else 的兩個方向都有跑到嗎？比 Line 更嚴格。</p>
-<p><strong>Statement Coverage（語句覆蓋率）</strong>：每個語句都執行過嗎？跟 Line 相近，但在一行多個語句時有差。</p>
+<p><strong>Line Coverage（行覆蓋率）</strong>：有幾行 code 被執行到。最常用，但也最容易被誤解</p>
+<p><strong>Branch Coverage（分支覆蓋率）</strong>：每個 if/else 的兩個方向都有跑到嗎？比 Line 更嚴格</p>
+<p><strong>Statement Coverage（語句覆蓋率）</strong>：每個語句都執行過嗎？跟 Line 相近，但在一行多個語句時有差</p>
 <p><strong>為什麼 Coverage 90% 不代表沒事</strong>：</p>
-<p>Coverage 量的是「哪些 code 有被執行到」，不是「有沒有驗正確的行為」。</p>
+<p>Coverage 量的是「哪些 code 有被執行到」，不是「有沒有驗正確的行為」</p>
 <pre><code class="language-python">def divide(a, b):
     return a / b
 
@@ -135,11 +135,11 @@ def test_divide():
     result = divide(10, 2)
     # 沒有 assert
 </code></pre>
-<p>這個測試讓 <code>divide</code> 函式的 Coverage 是 100%，但它沒有驗任何東西。</p>
-<p>Coverage 當 KPI 的問題是：它讓人往「把 code 跑到」的方向努力，而不是「驗正確的事」。我比較傾向把 Coverage 當成找「完全沒有被測到的區域」的工具，而不是追一個數字。</p>
+<p>這個測試讓 <code>divide</code> 函式的 Coverage 是 100%，但它沒有驗任何東西</p>
+<p>Coverage 當 KPI 的問題是：它讓人往「把 code 跑到」的方向努力，而不是「驗正確的事」。我比較傾向把 Coverage 當成找「完全沒有被測到的區域」的工具，而不是追一個數字</p>
 <hr>
 <h2 id="Test-Debt（測試債）">Test Debt（測試債）</h2>
-<p>技術債（Technical Debt）大家都聽過——為了趕快做出功能，犧牲了程式品質，之後要花更多時間「還債」（重構、修 bug）。Test Debt 是同樣的邏輯套用在測試上：你現在選擇不寫測試、或寫了不夠完整的測試，這些「虧欠」不會消失，之後遲早要回來還。</p>
+<p>技術債（Technical Debt）大家都聽過——為了趕快做出功能，犧牲了程式品質，之後要花更多時間「還債」（重構、修 bug）。Test Debt 是同樣的邏輯套用在測試上：你現在選擇不寫測試、或寫了不夠完整的測試，這些「虧欠」不會消失，之後遲早要回來還</p>
 <p>常見的形式：</p>
 <ul>
 <li>功能上線但測試沒補</li>
@@ -147,12 +147,12 @@ def test_divide():
 <li>Flaky Test 沒修，靠「重跑」撐著</li>
 <li>測試案例跟功能脫節，改了功能但沒更新測試</li>
 </ul>
-<p>Test Debt 難察覺的原因是它不像 bug 會立刻報錯，它在系統某個地方慢慢累積，直到某次改動讓它爆出來。</p>
+<p>Test Debt 難察覺的原因是它不像 bug 會立刻報錯，它在系統某個地方慢慢累積，直到某次改動讓它爆出來</p>
 <p>幾個辨認的問題：有沒有人不敢改某段 code，因為不知道會不會壞東西？每次大改動，QA 都要手動驗很多東西，因為自動化跟不上？Flaky Test 的數量一直增加，但沒有人在修？</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>這些詞被說爛了的代價是：大家說的是同一個詞，但指的不是同一件事。多問一句「你說的 X 是指什麼」，通常會有驚喜。</strong></p>
+<p><strong>這些詞被說爛了的代價是：大家說的是同一個詞，但指的不是同一件事。多問一句「你說的 X 是指什麼」，通常會有驚喜</strong></p>
 </blockquote>
 
           </div>

@@ -13,6 +13,7 @@
 - [Bug 的語言](../bug-language/) — Bug、Defect、Severity、Priority，這些詞說的不一定是同一件事
 - [測試文件與流程](../test-docs/) — Test Plan、DoD、Acceptance Criteria 是什麼、怎麼用
 - [Flaky、Coverage、Regression：你說的跟我說的一樣嗎？](../common-terms/) — 被說爛的詞，重新說清楚
+- [API 測試術語](../api-testing/) — Contract Testing、Schema Validation、冪等，都在回答同一個問題
 
 **原則**
 
@@ -27,7 +28,7 @@
 **術語 / 概念（系列的其他集數）**
 
 - **Test Double** — Mock、Stub、Fake、Spy，差在意圖
-- 再後面：自動化術語、API 測試、CI/CD、效能測試、AI 時代的新術語
+- 再後面：自動化術語、CI/CD、效能測試、AI 時代的新術語
 
 **自動化**
 

@@ -89,27 +89,27 @@
           <a href="../../#/posts" class="post__back">← All posts</a>
           <p class="post__meta">2026.06.24  ·  更新 2026.07.07  ·  <a href="../../#/tags/術語" class="post__tag-link">術語</a>  ·  4 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/bug-language/" data-path-legacy="/lucy-qa/#/posts/bug-language"></span></p>
           <h1 class="post__title">Bug 的語言</h1>
-          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  1 / 5</p><ul class="series__list"><li class="series__item series__item--current"><span class="series__num">1.</span><span>Bug 的語言</span></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li></ul></nav>
+          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  1 / 6</p><ul class="series__list"><li class="series__item series__item--current"><span class="series__num">1.</span><span>Bug 的語言</span></li><li class="series__item"><span class="series__num">2.</span><a href="../test-docs/">測試文件與流程</a></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li><li class="series__item"><span class="series__num">6.</span><a href="../api-testing/">API 測試術語</a></li></ul></nav>
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug、Defect、Issue、Incident 用在不同場合；Severity 是技術影響、Priority 是處理順序——前者 QA 定，後者團隊一起定。能 reproduce 是好 bug report 的第一條，其他都是裝飾。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Bug、Defect、Issue、Incident 用在不同場合；Severity 是技術影響、Priority 是處理順序——前者 QA 定，後者團隊一起定。能 reproduce 是好 bug report 的第一條，其他都是裝飾</p>
 </div>
 <h2 id="一個開會場景">一個開會場景</h2>
 <p>「這個 bug 很嚴重，要馬上修。」</p>
 <p>「等一下，你說的嚴重是指影響範圍大，還是說你覺得要排在這週？」</p>
-<p>沉默三秒。</p>
-<p>這不是在刁難，是因為「嚴重」這個詞在測試圈裡有兩個意思，很多人混著用。混著用的結果是：RD 以為是在說重要性，QA 說的其實是影響程度，PM 聽成是時間壓力——同一句話，三個人理解不同，會議結束了事情還沒對齊。</p>
-<p>術語存在的原因，就是讓這種對話不用每次都重新解釋。</p>
+<p>沉默三秒</p>
+<p>這不是在刁難，是因為「嚴重」這個詞在測試圈裡有兩個意思，很多人混著用。混著用的結果是：RD 以為是在說重要性，QA 說的其實是影響程度，PM 聽成是時間壓力——同一句話，三個人理解不同，會議結束了事情還沒對齊</p>
+<p>術語存在的原因，就是讓這種對話不用每次都重新解釋</p>
 <hr>
 <h2 id="Bug-vs-Defect-vs-Issue-vs-Incident">Bug vs Defect vs Issue vs Incident</h2>
-<p>這四個詞常被當同義詞用，但不同公司、不同場合選用哪個詞其實有差。</p>
+<p>這四個詞常被當同義詞用，但不同公司、不同場合選用哪個詞其實有差</p>
 <p><strong>Bug</strong>
-最日常的說法。通常指「程式行為跟預期不符」，不分大小。口語中最常用，但也最模糊。</p>
+最日常的說法。通常指「程式行為跟預期不符」，不分大小。口語中最常用，但也最模糊</p>
 <p><strong>Defect</strong>
-比 Bug 正式一點。強調「產品有瑕疵」，是可以量化、追蹤的東西。進 ticket 系統、寫報告的時候通常會看到這個詞。</p>
+比 Bug 正式一點。強調「產品有瑕疵」，是可以量化、追蹤的東西。進 ticket 系統、寫報告的時候通常會看到這個詞</p>
 <p><strong>Issue</strong>
-更廣。不一定是程式出錯，可能是需求不清、環境問題、設計不符使用者期待。很多團隊用 Issue 包含所有「需要處理的事」，Bug 只是 Issue 的子集。</p>
+更廣。不一定是程式出錯，可能是需求不清、環境問題、設計不符使用者期待。很多團隊用 Issue 包含所有「需要處理的事」，Bug 只是 Issue 的子集</p>
 <p><strong>Incident</strong>
-通常是 production 出事了。影響到真實使用者、有時間壓力、需要 post-mortem。Incident 不一定是 Bug 造成的——可能是設定錯誤、流量異常、外部依賴掛了。</p>
+通常是 production 出事了。影響到真實使用者、有時間壓力、需要 post-mortem。Incident 不一定是 Bug 造成的——可能是設定錯誤、流量異常、外部依賴掛了</p>
 <table>
 <thead>
 <tr>
@@ -136,9 +136,9 @@
 </tbody></table>
 <hr>
 <h2 id="Severity-vs-Priority">Severity vs Priority</h2>
-<p>這組最常搞混，也最常造成排程爭議。</p>
+<p>這組最常搞混，也最常造成排程爭議</p>
 <p><strong>Severity（嚴重度）</strong>
-這個問題的<strong>技術影響程度</strong>。跟多少使用者受影響、功能有多核心有關。</p>
+這個問題的<strong>技術影響程度</strong>。跟多少使用者受影響、功能有多核心有關</p>
 <ul>
 <li>Critical — 系統掛了、資料遺失、無法繞過</li>
 <li>High — 主要功能無法使用，沒有 workaround</li>
@@ -146,16 +146,16 @@
 <li>Low — 小問題，不影響主要流程</li>
 </ul>
 <p><strong>Priority（優先度）</strong>
-這個問題<strong>應該什麼時候被處理</strong>。跟商業判斷、時程、資源有關。</p>
-<p>Severity Low 的 bug 可以有 Priority High——例如登入頁的 logo 跑版，技術上沒什麼影響，但明天有大客戶 demo。</p>
-<p>Severity Critical 的 bug 也可能暫時是 Priority Low——例如在幾乎沒人用的舊版功能上發現的崩潰，已確認下季要砍掉。</p>
-<p><strong>Severity 是 QA 定的，Priority 是團隊一起決定的。</strong> 把這兩件事混在一起，排程就會充滿主觀。</p>
+這個問題<strong>應該什麼時候被處理</strong>。跟商業判斷、時程、資源有關</p>
+<p>Severity Low 的 bug 可以有 Priority High——例如登入頁的 logo 跑版，技術上沒什麼影響，但明天有大客戶 demo</p>
+<p>Severity Critical 的 bug 也可能暫時是 Priority Low——例如在幾乎沒人用的舊版功能上發現的崩潰，已確認下季要砍掉</p>
+<p><strong>Severity 是 QA 定的，Priority 是團隊一起決定的。</strong> 把這兩件事混在一起，排程就會充滿主觀</p>
 <hr>
 <h2 id="Root-Cause-vs-Symptom">Root Cause vs Symptom</h2>
-<p>大多數 bug report 只寫到 symptom。</p>
+<p>大多數 bug report 只寫到 symptom</p>
 <p>Symptom 是你<strong>看到</strong>的現象：「點擊送出按鈕沒有反應。」</p>
 <p>Root Cause 是<strong>為什麼</strong>：「API 在處理空字串時沒有回傳錯誤，前端 handler 收到 undefined 就靜默失敗。」</p>
-<p>只寫 symptom 的 bug report，RD 拿到之後還要自己找 root cause。有時候找到的是錯的地方，修了一個不相關的東西，symptom 消失了，問題還在。</p>
+<p>只寫 symptom 的 bug report，RD 拿到之後還要自己找 root cause。有時候找到的是錯的地方，修了一個不相關的東西，symptom 消失了，問題還在</p>
 <p>你不一定每次都能找到 root cause，但可以寫清楚：</p>
 <ul>
 <li>發生了什麼（symptom）</li>
@@ -163,17 +163,17 @@
 <li>你懷疑的原因（有的話寫，沒有不用硬湊）</li>
 <li>不發生的條件（如果有的話）</li>
 </ul>
-<p>能 reproduce，就是好 bug report 的第一條。其他都是裝飾。</p>
+<p>能 reproduce，就是好 bug report 的第一條。其他都是裝飾</p>
 <hr>
 <h2 id="Regression-Bug">Regression Bug</h2>
-<p>修了舊問題，壞了新東西——這叫 regression。</p>
-<p>特別麻煩的原因是它通常<strong>不在你預期的地方出現</strong>。你修了金流，登入掛了。你改了 API response 格式，三個下游服務靜默失敗。</p>
+<p>修了舊問題，壞了新東西——這叫 regression</p>
+<p>特別麻煩的原因是它通常<strong>不在你預期的地方出現</strong>。你修了金流，登入掛了。你改了 API response 格式，三個下游服務靜默失敗</p>
 <p>找到 regression 的時候，除了修，我覺得值得問一下：<strong>為什麼這條測試沒有在它被破壞的時候擋下來？</strong></p>
-<p>通常答案是耦合太緊，或是測試的覆蓋跟真實的依賴關係脫節了。</p>
+<p>通常答案是耦合太緊，或是測試的覆蓋跟真實的依賴關係脫節了</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>用對詞，才能讓對的人做對的事。Bug 的語言不是在咬文嚼字，是讓溝通少損耗一點。</strong></p>
+<p><strong>用對詞，才能讓對的人做對的事。Bug 的語言不是在咬文嚼字，是讓溝通少損耗一點</strong></p>
 </blockquote>
 
           </div>

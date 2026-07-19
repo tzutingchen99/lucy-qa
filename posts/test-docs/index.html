@@ -89,14 +89,14 @@
           <a href="../../#/posts" class="post__back">← All posts</a>
           <p class="post__meta">2026.06.28  ·  更新 2026.07.07  ·  <a href="../../#/tags/術語" class="post__tag-link">術語</a>  ·  4 min read  ·  <span class="goatcounter-count" data-path="/lucy-qa/posts/test-docs/" data-path-legacy="/lucy-qa/#/posts/test-docs"></span></p>
           <h1 class="post__title">測試文件與流程</h1>
-          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  2 / 5</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item series__item--current"><span class="series__num">2.</span><span>測試文件與流程</span></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li></ul></nav>
+          <nav class="series" aria-label="術語 系列"><p class="series__label">術語 系列  2 / 6</p><ul class="series__list"><li class="series__item"><span class="series__num">1.</span><a href="../bug-language/">Bug 的語言</a></li><li class="series__item series__item--current"><span class="series__num">2.</span><span>測試文件與流程</span></li><li class="series__item"><span class="series__num">3.</span><a href="../common-terms/">Flaky、Coverage、Regression：你說的跟我說的一樣嗎？</a></li><li class="series__item"><span class="series__num">4.</span><a href="../test-levels/">測試層級與類型</a></li><li class="series__item"><span class="series__num">5.</span><a href="../test-design/">測試設計技術</a></li><li class="series__item"><span class="series__num">6.</span><a href="../api-testing/">API 測試術語</a></li></ul></nav>
           <div class="prose">
-<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Test Plan、Acceptance Criteria、DoD、DoR 都在做同一件事：讓 QA、RD、PM 說的「完成」指的是同一件事。文件是溝通工具，不是合規產物。</p>
+<div class="callout callout--tldr"><p class="callout__label">TL;DR</p><p>Test Plan、Acceptance Criteria、DoD、DoR 都在做同一件事：讓 QA、RD、PM 說的「完成」指的是同一件事。文件是溝通工具，不是合規產物</p>
 </div>
 <h2 id="文件的問題不是「要不要寫」">文件的問題不是「要不要寫」</h2>
 <p>很多團隊在這個問題上卡在錯的地方：「測試文件要寫多詳細？」</p>
 <p>比這個更值得想的問題是：<strong>這份文件是寫給誰看的，為了讓什麼事情不要出錯？</strong></p>
-<p>文件不是為了合規、不是為了讓上面的人看到你有在做事。它是讓 QA、RD、PM 不用每次都從頭溝通同一件事的工具——這是我自己比較接受的定義。</p>
+<p>文件不是為了合規、不是為了讓上面的人看到你有在做事。它是讓 QA、RD、PM 不用每次都從頭溝通同一件事的工具——這是我自己比較接受的定義</p>
 <hr>
 <h2 id="Test-Plan（測試計畫）">Test Plan（測試計畫）</h2>
 <p>Test Plan 主要回答三個問題：</p>
@@ -105,44 +105,44 @@
 <li><strong>不測什麼</strong> — 明確說出排除在外的部分，以及為什麼</li>
 <li><strong>怎麼測</strong> — 用什麼方法、什麼環境、什麼工具</li>
 </ol>
-<p>「不測什麼」這一項很多人會跳過，但沒有說清楚範圍，所有人對「測完了」這件事的理解就會不一樣。</p>
-<p>Test Plan 不需要很長，讓人讀完之後知道「這次測試的邊界在哪裡」就夠了。</p>
+<p>「不測什麼」這一項很多人會跳過，但沒有說清楚範圍，所有人對「測完了」這件事的理解就會不一樣</p>
+<p>Test Plan 不需要很長，讓人讀完之後知道「這次測試的邊界在哪裡」就夠了</p>
 <hr>
 <h2 id="Test-Suite-vs-Test-Case">Test Suite vs Test Case</h2>
-<p><strong>Test Case（測試案例）</strong>：一個具體的驗證單位。有前置條件、步驟、預期結果。</p>
-<p><strong>Test Suite（測試套件）</strong>：一組 Test Case 的集合，通常按功能或目的分組。</p>
-<p>例如「結帳功能 Test Suite」裡包含：正常結帳流程、折扣碼套用、庫存不足時的行為、付款失敗的處理。</p>
-<p>Test Suite 是組織的工具，讓你知道「跑完這批代表什麼程度的驗證做完了」。</p>
+<p><strong>Test Case（測試案例）</strong>：一個具體的驗證單位。有前置條件、步驟、預期結果</p>
+<p><strong>Test Suite（測試套件）</strong>：一組 Test Case 的集合，通常按功能或目的分組</p>
+<p>例如「結帳功能 Test Suite」裡包含：正常結帳流程、折扣碼套用、庫存不足時的行為、付款失敗的處理</p>
+<p>Test Suite 是組織的工具，讓你知道「跑完這批代表什麼程度的驗證做完了」</p>
 <hr>
 <h2 id="Test-Charter（測試任務書）">Test Charter（測試任務書）</h2>
-<p>這個詞在探索性測試裡會看到。</p>
+<p>這個詞在探索性測試裡會看到</p>
 <p><strong>探索性測試</strong>不是隨便亂點，是有目的的自由探索。Test Charter 是這個探索的任務書：</p>
 <pre><code>目標（Target）：購物車功能
 目的（Purpose）：找出在邊界條件下可能的異常行為
 時間限制：60 分鐘
 </code></pre>
-<p>Charter 不規定你怎麼測，但給你一個框架，讓探索有方向、事後也能說清楚你測了什麼、發現了什麼。</p>
+<p>Charter 不規定你怎麼測，但給你一個框架，讓探索有方向、事後也能說清楚你測了什麼、發現了什麼</p>
 <hr>
 <h2 id="Acceptance-Criteria（驗收條件）">Acceptance Criteria（驗收條件）</h2>
-<p>理想的狀態是 PM、RD、QA 一起定，在開發開始之前。</p>
-<p>好的 Acceptance Criteria 是可以被「驗」的，不是可以被「詮釋」的。</p>
+<p>理想的狀態是 PM、RD、QA 一起定，在開發開始之前</p>
+<p>好的 Acceptance Criteria 是可以被「驗」的，不是可以被「詮釋」的</p>
 <p>不太好的寫法：「結帳流程要流暢」</p>
 <p>比較具體的寫法：「使用者從購物車點擊結帳，到看到訂單確認頁面，步驟不超過三步，且在正常網路條件下完成時間不超過三秒」</p>
-<p>Acceptance Criteria 定好了，測試案例才有依據。QA 是在「驗 Acceptance Criteria 有沒有被滿足」，而不是「自己猜功能應該長什麼樣子」。</p>
+<p>Acceptance Criteria 定好了，測試案例才有依據。QA 是在「驗 Acceptance Criteria 有沒有被滿足」，而不是「自己猜功能應該長什麼樣子」</p>
 <hr>
 <h2 id="DoD：Definition-of-Done">DoD：Definition of Done</h2>
 <p><strong>DoD = 什麼叫做「這個功能完成了」</strong></p>
-<p>DoD 是團隊共識，不是某一個人說了算。通常包含：功能實作完成、單元測試寫完且通過、Code review 完成、QA 測試通過、文件更新、Deploy 到測試環境。</p>
-<p>沒有明確 DoD 的情況，每個人對「完成」的定義不同，很容易出現「我這邊是好的」但測起來還是有問題的情況。</p>
+<p>DoD 是團隊共識，不是某一個人說了算。通常包含：功能實作完成、單元測試寫完且通過、Code review 完成、QA 測試通過、文件更新、Deploy 到測試環境</p>
+<p>沒有明確 DoD 的情況，每個人對「完成」的定義不同，很容易出現「我這邊是好的」但測起來還是有問題的情況</p>
 <hr>
 <h2 id="DoR：Definition-of-Ready">DoR：Definition of Ready</h2>
 <p><strong>DoR = 什麼叫做「這個需求可以開始做了」</strong></p>
-<p>DoR 是讓問題在最早的階段被發現的機制。如果一個需求在開始開發之前連驗收條件都還沒定好，QA 最後收到的通常是一個沒辦法被清楚驗收的功能。</p>
-<p>DoR 通常包含：需求描述清楚沒有歧義、Acceptance Criteria 已定義、設計稿確認（如果有的話）、依賴的功能或 API 已確認。</p>
+<p>DoR 是讓問題在最早的階段被發現的機制。如果一個需求在開始開發之前連驗收條件都還沒定好，QA 最後收到的通常是一個沒辦法被清楚驗收的功能</p>
+<p>DoR 通常包含：需求描述清楚沒有歧義、Acceptance Criteria 已定義、設計稿確認（如果有的話）、依賴的功能或 API 已確認</p>
 <hr>
 <h2 id="一個結論">一個結論</h2>
 <blockquote>
-<p><strong>DoD 跟 DoR 聽起來像是流程文件，但它們真正在做的事只有一件：讓三方說的「完成」指的是同一件事。</strong></p>
+<p><strong>DoD 跟 DoR 聽起來像是流程文件，但它們真正在做的事只有一件：讓三方說的「完成」指的是同一件事</strong></p>
 </blockquote>
 
           </div>
